@@ -78,7 +78,7 @@ public class UserController {
             log.warn("Логин не должен содержать пробелы");
             throw new ValidationException();
         }
-        if ( user.getName() == null || user.getName().isEmpty()) {
+        if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
         return true;
