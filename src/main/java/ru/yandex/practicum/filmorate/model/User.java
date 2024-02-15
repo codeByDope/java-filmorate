@@ -7,16 +7,15 @@ import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Data
-public class Film {
+public class User {
     private Integer id;
+    @Email
+    private String email;
     @NotBlank
+    private String login;
     private String name;
-    @Size(min = 0, max = 200)
-    private String description;
-    @NotNull
-    private LocalDate releaseDate;
-    @Positive
-    private long duration;
+    @PastOrPresent
+    private LocalDate birthday;
     @Getter
     private static int idCounter;
 
