@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,13 +20,13 @@ public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
 
     @GetMapping
-    public ResponseEntity<?> getFilms() {
+    public ResponseEntity<Collection<Film>> getFilms() {
         log.info("Были запрошены фильмы. Их количество - {}", films.size());
         return ResponseEntity.ok(films.values());
     }
 
     @PostMapping
-    public ResponseEntity<?> addFilm(@Valid @RequestBody Film film) {
+    public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
         try {
             if (validateFilm(film)) {
                 if (film.getId() == null) {
@@ -52,7 +53,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateFilm(@Valid @RequestBody Film film) {
+    public ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
         try {
             if (validateFilm(film)) {
                 if (film.getId() == null) {

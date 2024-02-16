@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,13 +19,13 @@ public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
 
     @GetMapping
-    public ResponseEntity<?> getUsers() {
+    public ResponseEntity<Collection<User>> getUsers() {
         log.info("Запрошены пользователи");
         return ResponseEntity.ok(users.values());
     }
 
     @PostMapping
-    public ResponseEntity<?> addUser(@Valid @RequestBody User user) {
+    public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
         try {
             if (validateUser(user)) {
                 if (user.getId() == null) {
@@ -50,7 +51,7 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@Valid @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
         try {
             if (validateUser(user)) {
                 if (user.getId() == null) {
