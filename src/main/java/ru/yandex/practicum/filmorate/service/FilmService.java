@@ -39,7 +39,7 @@ public class FilmService {
 
     public Collection<Film> getMostPopularFilms(Long count) {
         return storage.getFilms().stream()
-                .sorted((o1,o2) -> o2.getCountOfLikerId().compareTo(o1.getCountOfLikerId()))
+                .sorted((o1, o2) -> o2.getCountOfLikerId().compareTo(o1.getCountOfLikerId()))
                 .limit(count)
                 .collect(Collectors.toList());
     }

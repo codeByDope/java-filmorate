@@ -24,13 +24,13 @@ public class UserService {
     public void addFriend(Long id, Long friendId) {
         storage.getUserById(id).addFriend(friendId);
         storage.getUserById(friendId).addFriend(id);
-        log.info("Пользователь {} добавил в друзья пользователя {}.",id,friendId);
+        log.info("Пользователь {} добавил в друзья пользователя {}.", id, friendId);
     }
 
     public void removeFriend(Long id, Long friendId) {
         storage.getUserById(id).removeFriend(friendId);
         storage.getUserById(friendId).removeFriend(id);
-        log.info("Пользователь {} удалил из друзей пользователя {}.",id,friendId);
+        log.info("Пользователь {} удалил из друзей пользователя {}.", id, friendId);
     }
 
     public Collection<User> getCommonFriends(Long id, Long otherId) {
@@ -49,7 +49,7 @@ public class UserService {
     public Collection<User> getUsersFriends(Long id) {
         Set<Long> setOfFriends = storage.getUserById(id).getFriendsId();
         Collection<User> result = new ArrayList<>();
-        for (Long friendId: setOfFriends) {
+        for (Long friendId : setOfFriends) {
             result.add(storage.getUserById(friendId));
         }
         return result;
