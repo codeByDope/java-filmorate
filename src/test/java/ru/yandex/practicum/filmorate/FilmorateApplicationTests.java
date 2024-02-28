@@ -3,9 +3,6 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
-import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -61,21 +58,6 @@ class FilmorateApplicationTests {
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(1, violations.size());
     }
-
-//    @Test
-//    public void badLoginWithWhitespaceTest() {
-//        UserController controller = new UserController();
-//        User user = new User();
-//        user.setId(1L);
-//        user.setEmail("kikiloveme@mail.ru");
-//        user.setLogin("ki ki");
-//        user.setBirthday(LocalDate.of(2100, 1, 1));
-//        user.setName("Kiruha");
-//        controller.addUser(user);
-//
-//
-//        assertEquals(ResponseEntity.badRequest().body(user), controller.addUser(user));
-//    }
 
     @Test
     public void futureBirthdayTest() {
@@ -138,19 +120,6 @@ class FilmorateApplicationTests {
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(1, violations.size());
     }
-
-//    @Test
-//    public void filmTooPastRelease() {
-//        FilmController controller = new FilmController();
-//        Film film = new Film();
-//        film.setId(1L);
-//        film.setName("film");
-//        film.setDescription("description))");
-//        film.setReleaseDate(LocalDate.of(1600, 10, 1));
-//        film.setDuration(1);
-//
-//        assertEquals(ResponseEntity.badRequest().body(film), controller.addFilm(film));
-//    }
 
     @Test
     public void filmNegativeDuration() {
