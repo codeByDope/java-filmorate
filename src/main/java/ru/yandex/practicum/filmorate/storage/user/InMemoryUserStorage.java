@@ -73,7 +73,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User deleteUser(Integer id) {
+    public User deleteUser(Long id) {
         if (users.containsKey(id)) {
             log.info("Был удален пользователь с ID {}", id);
             return users.get(id);

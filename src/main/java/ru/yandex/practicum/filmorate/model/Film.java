@@ -14,7 +14,7 @@ public class Film {
     private Long id;
     @NotBlank
     private String name;
-    @Size(min = 0, max = 200)
+    @Size(max = 200)
     private String description;
     @NotNull
     private LocalDate releaseDate;
