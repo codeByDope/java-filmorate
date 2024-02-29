@@ -1,47 +1,40 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.Valid;
 import java.util.Collection;
 
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/films")
 @RestController
 public class FilmController {
-    FilmStorage storage;
-    FilmService service;
-
-    @Autowired
-    public FilmController(FilmStorage storage, FilmService service) {
-        this.storage = storage;
-        this.service = service;
-    }
+    private final FilmService service;
 
     @GetMapping
     public ResponseEntity<Collection<Film>> getFilms() {
-        return ResponseEntity.ok(storage.getFilms());
+        return ResponseEntity.ok(service.getFilms());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Film> getFilmById(@PathVariable Long id) {
-        return ResponseEntity.ok(storage.getFilmById(id));
+        return ResponseEntity.ok(service.getFilmById(id));
     }
 
     @PostMapping
     public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
-        return ResponseEntity.ok(storage.addFilm(film));
+        return ResponseEntity.ok(service.addFilm(film));
     }
 
     @PutMapping
     public ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
-        return ResponseEntity.ok(storage.updateFilm(film));
+        return ResponseEntity.ok(service.updateFilm(film));
     }
 
     @PutMapping("/{id}/like/{userId}")

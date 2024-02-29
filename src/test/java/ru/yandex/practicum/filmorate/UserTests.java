@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.ConstraintViolation;
@@ -14,9 +13,8 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
 @SpringBootTest
-class FilmorateApplicationTests {
+public class UserTests {
     @Autowired
     Validator validator;
 
@@ -83,54 +81,5 @@ class FilmorateApplicationTests {
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(3, violations.size());
-    }
-
-    @Test
-    public void filmAllGoodTest() {
-        Film film = new Film();
-        film.setId(1L);
-        film.setName("film");
-        film.setDescription("description))");
-        film.setReleaseDate(LocalDate.now());
-        film.setDuration(1);
-        Set<ConstraintViolation<Film>> violations = validator.validate(film);
-        assertEquals(0, violations.size());
-    }
-
-    @Test
-    public void filmBadLogin() {
-        Film film = new Film();
-        film.setId(1L);
-        film.setName("");
-        film.setDescription("description))");
-        film.setReleaseDate(LocalDate.now());
-        film.setDuration(1);
-        Set<ConstraintViolation<Film>> violations = validator.validate(film);
-        assertEquals(1, violations.size());
-    }
-
-    @Test
-    public void filmLongDescription() {
-        Film film = new Film();
-        film.setId(1L);
-        film.setName("film");
-        film.setDescription("description))".repeat(20));
-        film.setReleaseDate(LocalDate.now());
-        film.setDuration(1);
-        Set<ConstraintViolation<Film>> violations = validator.validate(film);
-        assertEquals(1, violations.size());
-    }
-
-    @Test
-    public void filmNegativeDuration() {
-        Film film = new Film();
-        film.setId(1L);
-        film.setName("film");
-        film.setDescription("description))");
-        film.setReleaseDate(LocalDate.of(1600, 10, 1));
-        film.setDuration(-1);
-
-        Set<ConstraintViolation<Film>> violations = validator.validate(film);
-        assertEquals(1, violations.size());
     }
 }

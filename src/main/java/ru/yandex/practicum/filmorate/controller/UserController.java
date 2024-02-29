@@ -1,47 +1,40 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import javax.validation.Valid;
 import java.util.Collection;
 
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/users")
 @RestController
 public class UserController {
-    UserService service;
-    InMemoryUserStorage storage;
-
-    @Autowired
-    public UserController(UserService service, InMemoryUserStorage storage) {
-        this.service = service;
-        this.storage = storage;
-    }
+    private final UserService service;
 
     @GetMapping
     public ResponseEntity<Collection<User>> getUsers() {
-        return ResponseEntity.ok(storage.getUsers());
+        return ResponseEntity.ok(service.getUsers());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(storage.getUserById(id));
+        return ResponseEntity.ok(service.getUserById(id));
     }
 
     @PostMapping
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
-        return ResponseEntity.ok(storage.addUser(user));
+        return ResponseEntity.ok(service.addUser(user));
     }
 
     @PutMapping
     public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
-        return ResponseEntity.ok(storage.updateUser(user));
+        return ResponseEntity.ok(service.updateUser(user));
     }
 
     @PutMapping("/{id}/friends/{friendId}")
