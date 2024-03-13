@@ -7,7 +7,8 @@
 Есть класс фильм, поля также в таблице. Фильму можно поставить лайк, для этого я подготовил таблицу likers.
 
 **[ER-диаграмма](https://dbdiagram.io/d/filmorateDB-65ef314bb1f3d4062ca4cb98):**
-![image](https://github.com/codeByDope/java-filmorate/assets/140439291/a51d607d-7bba-4f31-911f-8040ae94b5ca)
+![image](https://github.com/codeByDope/java-filmorate/assets/140439291/64f27adc-5b3f-42b8-9001-2883102d6081)
+
 
 ***Примеры запросов:***
 1. Получение всех пользователей
@@ -42,4 +43,26 @@ SELECT u.id,
 FROM friends
 RIGHT OUTER JOIN users AS u ON friends.main_user_id = u.id
 GROUP BY u.id
+```
+
+6. Получение таблицы id и логина друзей пользователя с id N
+```
+SELECT u.user_id,
+       u.login
+FROM user AS u
+LEFT JOIN friends AS l ON u.user_id = f.friend_user_id
+WHERE f.main_user_id = 9 -- тут может быть любой ID
+  AND f.is_friend = true;
+```
+
+7. Получение таблицы с id пользователей, являющимися общими друзьями для определенных юзеров
+```
+SELECT u.user_id
+FROM user AS u
+LEFT JOIN friends AS f1 ON u.user_id = f1.friend_user_id
+LEFT JOIN friends AS f2 ON u.user_id = f2.friend_user_id
+WHERE (f1.main_user_id = 3 -- Любой нужный ID
+       AND f1.is_friend = true)
+  AND (f2.main_user_id = 7
+       AND f2.is_friend = true);
 ```
