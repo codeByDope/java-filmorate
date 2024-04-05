@@ -1,18 +1,17 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import ru.yandex.practicum.filmorate.exception.NotFriendException;
-import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     private Long id;
     @Email
@@ -22,30 +21,47 @@ public class User {
     private String name;
     @PastOrPresent
     private LocalDate birthday;
-    @Getter
-    private static Long idCounter = 0L;
-    @Getter
-    private Set<Long> friendsId = new HashSet<>();
 
-    public static Long increaseIdCounter() {
-        idCounter++;
-        return idCounter;
-    }
+    public static class Builder {
+        private Long id;
+        private String email;
+        private String login;
+        private String name;
+        private LocalDate birthday;
 
-    public void addFriend(Long id) {
-        if (id >= 0) {
-            friendsId.add(id);
-            return;
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
         }
-        throw new UserNotFoundException("Пользователь не может иметь отрицательный ID!");
-    }
 
-    public void removeFriend(Long id) {
-        if (!friendsId.contains(id)) {
-            throw new NotFriendException("Нельзя удалить из друзей пользователя, не являющегося вашим другом!");
+        public Builder email(String email) {
+            this.email = email;
+            return this;
         }
-        friendsId.remove(id);
+
+        public Builder login(String login) {
+            this.login = login;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder birthday(LocalDate birthday) {
+            this.birthday = birthday;
+            return this;
+        }
+
+        public User build() {
+            User user = new User();
+            user.setId(this.id);
+            user.setEmail(this.email);
+            user.setLogin(this.login);
+            user.setName(this.name);
+            user.setBirthday(this.birthday);
+            return user;
+        }
     }
-
-
 }

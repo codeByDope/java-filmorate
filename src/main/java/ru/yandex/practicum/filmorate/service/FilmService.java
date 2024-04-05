@@ -3,13 +3,12 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.film.FilmHasAlreadyCreatedException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -17,42 +16,35 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage storage;
 
-    public Collection<Film> getFilms() {
-        return storage.getFilms();
+    public List<Film> get() {
+        return storage.getAll();
     }
 
-    public Film getFilmById(Long id) {
-        return storage.getFilmById(id);
+    public Film getById(Long id) {
+        return storage.getById(id)
+                .orElseThrow(() -> new FilmNotFoundException("Фильм с идентификатором " + id + " не найден"));
     }
 
-    public Film addFilm(Film film) {
-        return storage.addFilm(film);
-    }
-
-    public Film updateFilm(Film film) {
-        return storage.updateFilm(film);
-    }
-
-    public void addLike(Long filmId, Long userId) {
-        storage.getFilmById(filmId).addLiker(userId);
-        log.info("Пользователь {} поставил лайк фильму {}", userId, filmId);
-    }
-
-    public void removeLike(Long filmId, Long userId) {
-        if (filmId < 0) {
-            throw new FilmNotFoundException("Фильм не может иметь отрицательный ID");
+    public Film add(Film film) {
+        Long id = film.getId();
+        if (id != null && !storage.getById(id).isEmpty()) {
+            throw new FilmHasAlreadyCreatedException("Фильм с таким ID уже существует!");
+        } else if (id != null && id < 0) {
+            throw new IllegalArgumentException("Фильм не может иметь отрицательный ID!");
         }
-        if (userId < 0) {
-            throw new UserNotFoundException("Пользователь не может иметь отрицательный ID");
-        }
-        storage.getFilmById(filmId).removeLiker(userId);
-        log.info("Пользователь {} снял лайк фильму {}", userId, filmId);
+        return storage.add(film);
     }
 
-    public Collection<Film> getMostPopularFilms(Long count) {
-        return storage.getFilms().stream()
-                .sorted((o1, o2) -> o2.getCountOfLikerId().compareTo(o1.getCountOfLikerId()))
-                .limit(count)
-                .collect(Collectors.toList());
+    public Film update(Film film) {
+        Long id = film.getId();
+        if (id == null) {
+            throw new IllegalArgumentException("ID фильма не указан!");
+        } else if (id < 0) {
+            throw new IllegalArgumentException("ID фильма не может быть отрицательным!");
+        } else if (storage.getById(id).isEmpty()) {
+            throw new FilmNotFoundException("Фильм с указанным ID не найден!");
+        } else {
+            return storage.update(film);
+        }
     }
 }
