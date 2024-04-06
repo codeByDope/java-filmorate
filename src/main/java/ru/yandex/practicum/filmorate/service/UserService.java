@@ -2,14 +2,14 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.user.UserHasAlreadyCreatedException;
+import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -17,53 +17,37 @@ import java.util.Set;
 public class UserService {
     private final UserStorage storage;
 
-    public Collection<User> getUsers() {
-        return storage.getUsers();
+    public List<User> getUsers() {
+        return storage.getAll();
     }
 
     public User getUserById(Long id) {
-        return storage.getUserById(id);
+        return storage.getById(id)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + id + " не найден"));
     }
 
     public User addUser(User user) {
-        return storage.addUser(user);
+        Long id = user.getId();
+        if (id != null && !storage.getById(id).isEmpty()) {
+            throw new UserHasAlreadyCreatedException("Пользователь с таким ID уже существует!");
+        } else if (id != null && id < 0) {
+            throw new IllegalArgumentException("ID пользователя не может быть отрицательным!");
+        } else {
+            return storage.add(user);
+        }
     }
 
     public User updateUser(User user) {
-        return storage.updateUser(user);
-    }
-
-    public void addFriend(Long id, Long friendId) {
-        storage.getUserById(id).addFriend(friendId);
-        storage.getUserById(friendId).addFriend(id);
-        log.info("Пользователь {} добавил в друзья пользователя {}.", id, friendId);
-    }
-
-    public void removeFriend(Long id, Long friendId) {
-        storage.getUserById(id).removeFriend(friendId);
-        storage.getUserById(friendId).removeFriend(id);
-        log.info("Пользователь {} удалил из друзей пользователя {}.", id, friendId);
-    }
-
-    public Collection<User> getCommonFriends(Long id, Long otherId) {
-        Collection<User> result = new HashSet<>();
-        Set<Long> idFriends = storage.getUserById(id).getFriendsId();
-        Set<Long> otherIdFriends = storage.getUserById(otherId).getFriendsId();
-        for (Long friendId : idFriends) {
-            if (otherIdFriends.contains(friendId)) {
-                result.add(storage.getUserById(friendId));
-            }
+        Long id = user.getId();
+        if (id == null) {
+            throw new IllegalArgumentException("ID пользователя не указан!");
+        } else if (id < 0) {
+            throw new IllegalArgumentException("ID пользователя не может быть отрицательным!");
+        } else if (storage.getById(id).isEmpty()) {
+            throw new UserNotFoundException("Пользователь с указанным ID не найден!");
+        } else {
+            return storage.update(user);
         }
-        log.info("Пользователь {} запросил список общих друзей с пользователем {}", id, otherId);
-        return result;
     }
 
-    public Collection<User> getUsersFriends(Long id) {
-        Set<Long> setOfFriends = storage.getUserById(id).getFriendsId();
-        Collection<User> result = new ArrayList<>();
-        for (Long friendId : setOfFriends) {
-            result.add(storage.getUserById(friendId));
-        }
-        return result;
-    }
 }
