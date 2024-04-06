@@ -7,8 +7,12 @@ import java.util.Optional;
 
 public interface GenreStorage {
     Genre add(Genre genre);
+
     void delete(Integer id);
+
     List<Genre> getAll();
+
     List<Genre> getByFilmId(Long id);
+
     Optional<Genre> getById(Integer id);
 }
