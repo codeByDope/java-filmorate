@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.users;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,18 +13,21 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserService {
+public class UserServiceImpl implements UserService {
     private final UserStorage storage;
 
+    @Override
     public List<User> getUsers() {
         return storage.getAll();
     }
 
+    @Override
     public User getUserById(Long id) {
         return storage.getById(id)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + id + " не найден"));
     }
 
+    @Override
     public User addUser(User user) {
         Long id = user.getId();
         if (id != null && !storage.getById(id).isEmpty()) {
@@ -36,6 +39,7 @@ public class UserService {
         }
     }
 
+    @Override
     public User updateUser(User user) {
         Long id = user.getId();
         if (id == null) {

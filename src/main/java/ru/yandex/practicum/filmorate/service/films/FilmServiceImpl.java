@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.films;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,18 +13,21 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class FilmService {
+public class FilmServiceImpl implements FilmService {
     private final FilmStorage storage;
 
+    @Override
     public List<Film> get() {
         return storage.getAll();
     }
 
+    @Override
     public Film getById(Long id) {
         return storage.getById(id)
                 .orElseThrow(() -> new FilmNotFoundException("Фильм с идентификатором " + id + " не найден"));
     }
 
+    @Override
     public Film add(Film film) {
         Long id = film.getId();
         if (id != null && !storage.getById(id).isEmpty()) {
@@ -35,6 +38,7 @@ public class FilmService {
         return storage.add(film);
     }
 
+    @Override
     public Film update(Film film) {
         Long id = film.getId();
         if (id == null) {

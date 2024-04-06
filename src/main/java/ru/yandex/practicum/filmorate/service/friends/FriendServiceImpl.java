@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.friends;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.users.UserService;
 import ru.yandex.practicum.filmorate.storage.friends.FriendsStorage;
 
 import java.util.List;
@@ -11,10 +12,11 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class FriendService {
+public class FriendServiceImpl implements FriendService {
     private final FriendsStorage storage;
     private final UserService userService;
 
+    @Override
     public void add(Long userId, Long friendId) {
         log.info("Проверка существования пользователя {}", userId);
         userService.getUserById(userId);
@@ -24,6 +26,7 @@ public class FriendService {
         log.info("Пользователь {} добавил в друзья пользователя {}", userId, friendId);
     }
 
+    @Override
     public void remove(Long userId, Long friendId) {
         log.info("Проверка существования пользователя {}", userId);
         userService.getUserById(userId);
@@ -32,6 +35,7 @@ public class FriendService {
         log.info("Пользователь {} удалил из друзей {}", userId, friendId);
     }
 
+    @Override
     public List<User> getCommon(Long userId, Long friendId) {
         log.info("Проверка существования пользователя {}", userId);
         userService.getUserById(userId);
@@ -40,6 +44,7 @@ public class FriendService {
         return storage.getCommon(userId, friendId);
     }
 
+    @Override
     public List<User> getUsersFriends(Long id) {
         log.info("Проверка существования пользователя {}", id);
         userService.getUserById(id);
