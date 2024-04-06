@@ -45,9 +45,10 @@ public class LikersDbStorage implements LikerStorage {
 
     @Override
     public List<User> getLikersByFilmId(Long id) {
-        String sql = "SELECT * FROM users WHERE id IN (SELECT liker_id FROM likers WHERE film_id = ?);";
-        return jdbcTemplate.query(sql, new Object[]{sql}, userMapper);
+        String sql = "SELECT * FROM users WHERE id IN (SELECT liker_id FROM likers WHERE film_id = ?)";
+        return jdbcTemplate.query(sql, new Object[]{id}, userMapper);
     }
+
 
     @Override
     public List<Film> getFilmsByLikerId(Long id) {
