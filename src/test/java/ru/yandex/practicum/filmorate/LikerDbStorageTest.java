@@ -51,7 +51,7 @@ public class LikerDbStorageTest {
         ratingStorage = new RatingDbStorage(new MpaRatingRowMapper(), jdbcTemplate);
         likerStorage = new LikersDbStorage(jdbcTemplate, new UserRowMapper(), new FilmRowMapper(genreStorage, ratingStorage));
         userStorage = new UserDbStorage(new UserRowMapper(), jdbcTemplate);
-        filmStorage = new FilmDbStorage(new FilmRowMapper(genreStorage, ratingStorage),jdbcTemplate, genreStorage, ratingStorage);
+        filmStorage = new FilmDbStorage(new FilmRowMapper(genreStorage, ratingStorage), jdbcTemplate, genreStorage, ratingStorage);
 
         jdbcTemplate.execute("MERGE INTO genres(id, title) VALUES (1, 'Комедия')");
         jdbcTemplate.execute("MERGE INTO genres(id, title) VALUES (2, 'Драма')");
