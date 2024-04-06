@@ -31,7 +31,6 @@ public class FilmDbStorageTest {
     private GenreStorage genreStorage;
     private RatingStorage ratingStorage;
 
-
     @BeforeEach
     public void setUp() {
         loadTestData();
@@ -40,7 +39,6 @@ public class FilmDbStorageTest {
     private void loadTestData() {
         genreStorage = new GenreDbStorage(new GenreRowMapper(), jdbcTemplate);
         ratingStorage = new RatingDbStorage(new MpaRatingRowMapper(), jdbcTemplate);
-
 
         jdbcTemplate.execute("MERGE INTO genres(id, title) VALUES (1, 'Комедия')");
         jdbcTemplate.execute("MERGE INTO genres(id, title) VALUES (2, 'Драма')");
@@ -54,19 +52,13 @@ public class FilmDbStorageTest {
         jdbcTemplate.execute("MERGE INTO mpa_ratings(id, title) VALUES (3, 'PG-13')");
         jdbcTemplate.execute("MERGE INTO mpa_ratings(id, title) VALUES (4, 'R')");
         jdbcTemplate.execute("MERGE INTO mpa_ratings(id, title) VALUES (5, 'NC-17')");
+
+        jdbcTemplate.update("MERGE INTO films(id, title, description, release_date, duration, rating_id) VALUES (?, ?, ?, ?, ?, ?)",
+                1L, "Test Film", "Test Film Description", LocalDate.of(2023, 1, 1), 120, 1L);
     }
 
     @Test
     public void testAddFilm() {
-
-        Film film = new Film.Builder()
-                .name("Test Film")
-                .description("Test Film Description")
-                .releaseDate(LocalDate.of(2023, 1, 1))
-                .duration(120)
-                .genres(genreStorage.getAll())
-                .mpa(ratingStorage.getById(1).get())
-                .build();
 
         FilmDbStorage filmDbStorage = new FilmDbStorage(new FilmRowMapper(genreStorage, ratingStorage), jdbcTemplate, genreStorage, ratingStorage);
 
