@@ -21,8 +21,8 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Длительность фильма не может быть отрицательной")
     private long duration;
-    List<Genre> genres = new ArrayList<>();
-    MpaRating mpa;
+    private List<Genre> genres = new ArrayList<>();
+    private MpaRating mpa;
 
     public static class Builder {
         private Long id;

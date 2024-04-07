@@ -49,13 +49,10 @@ public class RatingDbStorage implements RatingStorage {
 
     @Override
     public Optional<MpaRating> getByFilmId(Long id) {
-        String sql = "SELECT * \n" +
-                "FROM MPA_ratings \n" +
-                "WHERE id = (\n" +
-                "    SELECT rating_id \n" +
-                "    FROM films \n" +
-                "    WHERE id = ?\n" +
-                ");\n";
+        String sql = "SELECT mpa.* \n" +
+                "FROM MPA_ratings mpa \n" +
+                "JOIN films f ON mpa.id = f.rating_id \n" +
+                "WHERE f.id = ?;";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
 
         if (rs.next()) {
