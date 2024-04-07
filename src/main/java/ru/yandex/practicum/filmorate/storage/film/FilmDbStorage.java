@@ -65,7 +65,7 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         film.setId(filmId);
-        return jdbcTemplate.query("SELECT * FROM films WHERE id = ?;",new Object[]{filmId},mapper).get(0);
+        return film;
     }
 
 
