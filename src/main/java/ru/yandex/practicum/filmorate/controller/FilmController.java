@@ -40,4 +40,10 @@ public class FilmController {
         log.info("Запрошено обновление фильма " + film.getId());
         return service.update(film);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteFilmById(@PathVariable Long id) {
+        log.info("Было запрошено удаление фильма с id " + id);
+        service.delete(id);
+    }
 }

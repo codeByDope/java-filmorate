@@ -12,4 +12,6 @@ public interface FilmService {
     public Film add(Film film);
 
     public Film update(Film film);
+
+    void delete(Long id);
 }

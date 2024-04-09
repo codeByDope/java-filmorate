@@ -25,6 +25,14 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User add(User user) {
+        if (user.getId() == null) {
+            return addWithGeneratedId(user);
+        } else {
+            return addWithSpecifiedId(user);
+        }
+    }
+
+    private User addWithGeneratedId(User user) {
         String sql = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -32,12 +40,29 @@ public class UserDbStorage implements UserStorage {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getLogin());
-            ps.setString(3, user.getName());
+            ps.setString(3, user.getName() != null && !user.getName().isEmpty() ? user.getName() : user.getLogin());
             ps.setDate(4, Date.valueOf(user.getBirthday()));
             return ps;
         }, keyHolder);
 
         user.setId(keyHolder.getKey().longValue());
+        user.setName(user.getName() != null && !user.getName().isEmpty() ? user.getName() : user.getLogin()); // Обновляем имя пользователя на логин, если оно пустое
+        return user;
+    }
+
+    private User addWithSpecifiedId(User user) {
+        String sql = "INSERT INTO users (id, email, login, name, birthday) VALUES (?, ?, ?, ?, ?)";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setLong(1, user.getId());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getLogin());
+            ps.setString(4, user.getName() != null && !user.getName().isEmpty() ? user.getName() : user.getLogin());
+            ps.setDate(5, Date.valueOf(user.getBirthday()));
+            return ps;
+        });
+
         return user;
     }
 

@@ -38,4 +38,10 @@ public class UserController {
     public User updateUser(@Valid @RequestBody User user) {
         return service.updateUser(user);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteUserById(@PathVariable Long id) {
+        log.info("Было запрошено удаление пользователя с id " + id);
+        service.delete(id);
+    }
 }
