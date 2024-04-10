@@ -52,13 +52,13 @@ public class GenreDbStorage implements GenreStorage {
         String sql = "SELECT DISTINCT g.* " +
                 "FROM genres g " +
                 "JOIN films_genres fg ON g.id = fg.genre_id " +
-                "WHERE fg.film_id = ?";
+                "WHERE fg.film_id = ? ";
         return jdbcTemplate.query(sql, new Object[]{id}, mapper);
     }
 
     @Override
     public Optional<Genre> getById(Integer id) {
-        String sql = "SELECT * FROM genres WHERE id = ?;";
+        String sql = "SELECT * FROM genres WHERE id = ?";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
 
         if (rs.next()) {

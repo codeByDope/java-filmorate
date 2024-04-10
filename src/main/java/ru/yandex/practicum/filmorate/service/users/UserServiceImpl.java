@@ -35,6 +35,9 @@ public class UserServiceImpl implements UserService {
         } else if (id != null && id < 0) {
             throw new IllegalArgumentException("ID пользователя не может быть отрицательным!");
         } else {
+            if (user.getName().isEmpty()) {
+                user.setName(user.getLogin());
+            }
             return storage.add(user);
         }
     }
@@ -49,6 +52,9 @@ public class UserServiceImpl implements UserService {
         } else if (storage.getById(id).isEmpty()) {
             throw new UserNotFoundException("Пользователь с указанным ID не найден!");
         } else {
+            if (user.getName().isEmpty()) {
+                user.setName(user.getLogin());
+            }
             return storage.update(user);
         }
     }
