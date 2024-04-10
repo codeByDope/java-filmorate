@@ -7,7 +7,7 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 public class ReviewDO {
-    @NonNull Integer reviewId;
+    @NonNull Long reviewId;
     @NonNull Integer userId;
     @NonNull Integer filmId;
     String content;

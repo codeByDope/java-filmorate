@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Value
 public class Review {
 
-    Integer reviewId;
+    Long reviewId;
     Integer userId;
     Integer filmId;
     @NotBlank String content;

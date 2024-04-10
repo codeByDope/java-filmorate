@@ -13,13 +13,13 @@ public interface ReviewService {
 
     void deleteReview(int reviewId);
 
-    Review getReviewById(Integer id);
+    Review getReviewById(Long id);
 
     Collection<Review> getReviews(@Nullable Integer filmId, @Nullable Integer limit);
 
-    void addLike(Integer id, Integer userId);
+    void addLike(Long id, Integer userId);
 
-    void addDislike(Integer id, Integer userId);
+    void addDislike(Long id, Integer userId);
 
     void removeLike(Integer id, Integer userId);
 

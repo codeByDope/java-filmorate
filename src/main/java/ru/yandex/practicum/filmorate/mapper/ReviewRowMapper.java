@@ -20,7 +20,7 @@ public class ReviewRowMapper implements RowMapper<ReviewDO> {
     @Override
     public ReviewDO mapRow(ResultSet rs, int rowNum) throws SQLException {
         return ReviewDO.builder()
-                .reviewId(rs.getInt(ID))
+                .reviewId(rs.getLong(ID))
                 .filmId(rs.getInt(FILM_ID))
                 .userId(rs.getInt(USER_ID))
                 .content(rs.getString(CONTENT))

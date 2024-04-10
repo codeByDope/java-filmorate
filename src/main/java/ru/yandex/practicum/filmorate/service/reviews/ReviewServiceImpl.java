@@ -33,7 +33,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review getReviewById(Integer id) {
+    public Review getReviewById(Long id) {
         return reviewStorage.getReviewFromStorage(id);
     }
 
@@ -43,7 +43,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void addLike(Integer id, Integer userId) {
+    public void addLike(Long id, Integer userId) {
         if (userStorage.getById(userId.longValue()).isPresent()) {
             if (reviewStorage.getReviewById(id).isPresent()) {
                 reviewStorage.addLikeToReview(id, userId);
@@ -52,7 +52,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void addDislike(Integer id, Integer userId) {
+    public void addDislike(Long id, Integer userId) {
         if (userStorage.getById(userId.longValue()).isPresent()) {
             if (reviewStorage.getReviewById(id).isPresent()) {
                 reviewStorage.addDislikeToReview(id, userId);

@@ -35,7 +35,7 @@ public class ReviewController {
     }
 
     @GetMapping(ApiPathConstants.BY_ID_PATH)
-    public Review getReviewById(@PathVariable(name = "id") Integer id) {
+    public Review getReviewById(@PathVariable(name = "id") Long id) {
         return reviewService.getReviewById(id);
 
     }
@@ -48,7 +48,7 @@ public class ReviewController {
     }
 
     @PutMapping(ApiPathConstants.LIKE_PATH)
-    public ResponseEntity<Review> addLikeToReview(@PathVariable(name = "id") Integer id,
+    public ResponseEntity<Review> addLikeToReview(@PathVariable(name = "id") Long id,
                                                   @PathVariable(name = "userId") Integer userId) {
         reviewService.addLike(id, userId);
         return ResponseEntity.status(200)
@@ -56,7 +56,7 @@ public class ReviewController {
     }
 
     @PutMapping(ApiPathConstants.DISLIKE_PATH)
-    public ResponseEntity<Review> addDislikeToReview(@PathVariable(name = "id") Integer id,
+    public ResponseEntity<Review> addDislikeToReview(@PathVariable(name = "id") Long id,
                                                      @PathVariable(name = "userId") Integer userId) {
         reviewService.addDislike(id, userId);
         return ResponseEntity.status(200)

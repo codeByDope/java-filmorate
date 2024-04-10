@@ -15,17 +15,17 @@ public interface ReviewStorage {
 
     void deleteReview(int reviewId);
 
-    Optional<Review> getReviewById(Integer id);
+    Optional<Review> getReviewById(Long id);
 
     Collection<Review> getReviews(@Nullable Integer filmId, @Nullable Integer limit);
 
-    default Review getReviewFromStorage(Integer reviewId) {
+    default Review getReviewFromStorage(Long reviewId) {
         return getReviewById(reviewId).orElseThrow(() -> new ReviewNotFoundException("Отзыв по id=" + reviewId + " не найден"));
     }
 
-    void addLikeToReview(Integer reviewId, Integer userId);
+    void addLikeToReview(Long reviewId, Integer userId);
 
-    void addDislikeToReview(Integer reviewId, Integer userId);
+    void addDislikeToReview(Long reviewId, Integer userId);
 
     void removeLike(Integer reviewId, Integer userId);
 

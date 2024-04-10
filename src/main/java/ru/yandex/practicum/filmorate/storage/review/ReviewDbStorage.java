@@ -24,14 +24,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ReviewDbStorage implements ReviewStorage {
 
-    private static final String ADD_REVIEW = "INSERT INTO review (user_id, film_id, content, isPositive, useful) VALUES (?, ?, ?, ?, ?)";
-    private static final String UPDATE_REVIEW = "UPDATE review SET user_id=?, film_id=?, content=?, isPositive=?, useful=? WHERE id=?";
+    private static final String ADD_REVIEW = "INSERT INTO review (user_id, film_id, content, is_positive, useful) VALUES (?, ?, ?, ?, ?)";
+    private static final String UPDATE_REVIEW = "UPDATE review SET user_id=?, film_id=?, content=?, is_positive=?, useful=? WHERE id=?";
     private static final String DELETE_REVIEW = "DELETE FROM review WHERE id=?";
     private static final String GET_REVIEW_BY_ID = "SELECT * FROM review WHERE id=%s";
-    public static final String ADD_LIKE = "INSERT INTO like (review_id, user_id) VALUES (?, ?)";
-    public static final String REMOVE_LIKE = "DELETE FROM like WHERE review_id=?, user_id=?";
-    public static final String ADD_DISLIKE = "INSERT INTO dislike (review_id, user_id) VALUES (?, ?)";
-    public static final String REMOVE_DISLIKE = "DELETE FROM dislike WHERE review_id=?, user_id=?";
+    public static final String ADD_LIKE = "INSERT INTO likes (review_id, user_id) VALUES (?, ?)";
+    public static final String REMOVE_LIKE = "DELETE FROM likes WHERE review_id=?, user_id=?";
+    public static final String ADD_DISLIKE = "INSERT INTO dislikes (review_id, user_id) VALUES (?, ?)";
+    public static final String REMOVE_DISLIKE = "DELETE FROM dislikes WHERE review_id=?, user_id=?";
 
     private final JdbcTemplate jdbcTemplate;
     private final ReviewRowMapper reviewRowMapper;
@@ -54,7 +54,7 @@ public class ReviewDbStorage implements ReviewStorage {
             ps.setInt(5, review.getUseful());
             return ps;
         }, keyHolder);
-        Integer generatedReviewId = (Integer) keyHolder.getKey();
+        Long generatedReviewId = (Long) keyHolder.getKey();
 
         return getReviewFromStorage(generatedReviewId);
     }
@@ -80,7 +80,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public Optional<Review> getReviewById(Integer id) {
+    public Optional<Review> getReviewById(Long id) {
         String formattedSqlRequest = String.format(GET_REVIEW_BY_ID, id);
         try {
             ReviewDO reviewDO = jdbcTemplate.queryForObject(formattedSqlRequest, reviewRowMapper);
@@ -102,13 +102,13 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public void addLikeToReview(Integer reviewId, Integer userId) {
+    public void addLikeToReview(Long reviewId, Integer userId) {
         jdbcTemplate.update(ADD_LIKE, reviewId, userId);
         jdbcTemplate.update(REMOVE_DISLIKE, reviewId, userId);
     }
 
     @Override
-    public void addDislikeToReview(Integer reviewId, Integer userId) {
+    public void addDislikeToReview(Long reviewId, Integer userId) {
         jdbcTemplate.update(ADD_DISLIKE, reviewId, userId);
         jdbcTemplate.update(REMOVE_LIKE, reviewId, userId);
     }
