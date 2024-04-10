@@ -3,10 +3,13 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.model.validation.ValidReleaseDate;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class Film {
@@ -21,7 +24,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Длительность фильма не может быть отрицательной")
     private long duration;
-    private List<Genre> genres = new ArrayList<>();
+    private Set<Genre> genres = new HashSet<>();
     private MpaRating mpa;
 
     public static class Builder {
@@ -30,7 +33,7 @@ public class Film {
         private String description;
         private LocalDate releaseDate;
         private long duration;
-        private List<Genre> genres;
+        private Set<Genre> genres;
         private MpaRating mpa;
 
         public Builder id(Long id) {
@@ -58,7 +61,7 @@ public class Film {
             return this;
         }
 
-        public Builder genres(List<Genre> genres) {
+        public Builder genres(Set<Genre> genres) {
             this.genres = genres;
             return this;
         }

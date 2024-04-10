@@ -18,8 +18,11 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Qualifier("filmDbStorage")
@@ -71,9 +74,28 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        String sql = "UPDATE films SET title = ?, description = ?, release_date = ?, duration = ?, rating_id = ? WHERE id = ?;";
-        jdbcTemplate.update(sql, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
+        String updateFilmSql = "UPDATE films SET title = ?, description = ?, release_date = ?, " +
+                "duration = ?, rating_id = ? WHERE id = ?";
+        String deleteGenresSql = "DELETE FROM films_genres WHERE film_id = ?";
+        String insertGenreSql = "INSERT INTO films_genres (film_id, genre_id) VALUES (?, ?)";
+        Long filmId = film.getId();
+
+        Set<Genre> genres = new HashSet<>();
+        for (Genre genre : film.getGenres()) {
+            Genre g = genreStorage.getById(genre.getId()).orElseThrow(() ->
+                    new ValidationException("Неправильно набран рейтинг!"));
+            genres.add(g);
+        }
+        film.setGenres(genres.stream().sorted((f1, f2) -> f1.getId() - f2.getId()).collect(Collectors.toSet()));
+
+        jdbcTemplate.update(deleteGenresSql, filmId);
+
+        jdbcTemplate.update(updateFilmSql, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
                 film.getDuration(), film.getMpa().getId(), film.getId());
+
+        for (Genre genre : film.getGenres()) {
+            jdbcTemplate.update(insertGenreSql, filmId, genre.getId());
+        }
         return film;
     }
 
@@ -102,7 +124,7 @@ public class FilmDbStorage implements FilmStorage {
                     .releaseDate(rs.getDate("release_date").toLocalDate())
                     .duration(rs.getInt("duration"))
                     .mpa(ratingStorage.getByFilmId(id).orElse(null))
-                    .genres(genreStorage.getByFilmId(id))
+                    .genres(new HashSet<>(genreStorage.getByFilmId(id)))
                     .build();
 
             return Optional.of(film);
