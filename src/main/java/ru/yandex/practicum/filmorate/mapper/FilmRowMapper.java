@@ -12,7 +12,8 @@ import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class FilmRowMapper implements RowMapper<Film> {
         MpaRating rating = ratingStorage.getById(rs.getInt("rating_id")).orElse(null);
         film.setMpa(rating);
 
-        List<Genre> genres = genreStorage.getByFilmId(id);
+        Set<Genre> genres = new HashSet<>(genreStorage.getByFilmId(id));
         film.setGenres(genres);
 
         return film;
