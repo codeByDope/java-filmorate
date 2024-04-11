@@ -22,6 +22,14 @@ public class UserDbStorage implements UserStorage {
     private final RowMapper<User> mapper;
     private final JdbcTemplate jdbcTemplate;
 
+    private static final String INSERT_USER_SQL = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
+    private static final String INSERT_USER_WITH_ID_SQL = "INSERT INTO users (id, email, login, name, birthday) VALUES (?, ?, ?, ?, ?)";
+    private static final String UPDATE_USER_SQL = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
+    private static final String DELETE_USER_SQL = "DELETE FROM users WHERE id = ?";
+    private static final String SELECT_ALL_USERS_SQL = "SELECT * FROM users";
+    private static final String SELECT_USER_BY_ID_SQL = "SELECT * FROM users WHERE id = ?";
+    private static final String SELECT_ALL_FROM_LIKERS_SQL = "SELECT * FROM likers";
+
     @Override
     public User add(User user) {
         if (user.getId() == null) {
@@ -32,65 +40,49 @@ public class UserDbStorage implements UserStorage {
     }
 
     private User addWithGeneratedId(User user) {
-        String sql = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        String name = selectName(user);
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(INSERT_USER_SQL, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getLogin());
-            ps.setString(3, user.getName() != null && !user.getName().isEmpty() ? user.getName() : user.getLogin());
+            ps.setString(3, name);
             ps.setDate(4, Date.valueOf(user.getBirthday()));
             return ps;
         }, keyHolder);
 
         user.setId(keyHolder.getKey().longValue());
-        user.setName(user.getName() != null && !user.getName().isEmpty() ? user.getName() : user.getLogin()); // Обновляем имя пользователя на логин, если оно пустое
+        user.setName(name); // Обновляем имя пользователя на логин, если оно пустое
         return user;
     }
 
     private User addWithSpecifiedId(User user) {
-        String sql = "INSERT INTO users (id, email, login, name, birthday) VALUES (?, ?, ?, ?, ?)";
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setLong(1, user.getId());
-            ps.setString(2, user.getEmail());
-            ps.setString(3, user.getLogin());
-            ps.setString(4, user.getName() != null && !user.getName().isEmpty() ? user.getName() : user.getLogin());
-            ps.setDate(5, Date.valueOf(user.getBirthday()));
-            return ps;
-        });
-
+        jdbcTemplate.update(INSERT_USER_WITH_ID_SQL, user.getId(), user.getEmail(), user.getLogin(),
+                selectName(user), Date.valueOf(user.getBirthday()));
         return user;
     }
 
     @Override
     public User update(User user) {
-        String sql = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?;";
-
-        jdbcTemplate.update(sql, user.getEmail(), user.getLogin(), user.getName(),
+        jdbcTemplate.update(UPDATE_USER_SQL, user.getEmail(), user.getLogin(), user.getName(),
                 Date.valueOf(user.getBirthday()), user.getId());
-
         return user;
     }
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM users WHERE id = ?;";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(DELETE_USER_SQL, id);
     }
 
     @Override
     public List<User> getAll() {
-        String sql = "SELECT * FROM users;";
-        return jdbcTemplate.query(sql, mapper);
+        return jdbcTemplate.query(SELECT_ALL_USERS_SQL, mapper);
     }
 
     @Override
     public Optional<User> getById(Long id) {
-        String sql = "SELECT * FROM users WHERE id = ?;";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_USER_BY_ID_SQL, id);
 
         if (rs.next()) {
             User user = new User.Builder()
@@ -109,13 +101,12 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<Long> getRecommendations(Long id) {
-        String getListOfLikerSql = "SELECT * FROM likers;";
         Map<Long, List<Long>> likerToFilmsMap = new HashMap<>();
         Integer max = 0;
         List<Long> result = new ArrayList<>();
 
-        //Заполняем likersToFilmsMap: Ключ - id лайкнувшего, Значение - список лайкнутых фильмов
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(getListOfLikerSql);
+        // Заполняем likersToFilmsMap: Ключ - id лайкнувшего, Значение - список лайкнутых фильмов
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_ALL_FROM_LIKERS_SQL);
         while (rs.next()) {
             Long likerId = rs.getLong(2);
             Long filmId = rs.getLong(1);
@@ -128,11 +119,11 @@ public class UserDbStorage implements UserStorage {
             }
         }
 
-        //Получаю список лайков пользователя, которому подбираем рекомендации
+        // Получаем список лайков пользователя, которому подбираем рекомендации
         List<Long> likesOfUser = likerToFilmsMap.get(id);
-        /*Перебираем остальных юзеров, считаем количество сходств и одновременно сохраняем
+        /* Перебираем остальных юзеров, считаем количество сходств и одновременно сохраняем
         нелайкнутые нашим юзером фильмы, потом проверяем, если счетчик больше максимального количества схождений,
-        значит, надо сохранить список нелайкнутых фильмов, так как это потеницальный результат
+        значит, надо сохранить список нелайкнутых фильмов, так как это потенциальный результат
          */
         for (Map.Entry<Long, List<Long>> entry : likerToFilmsMap.entrySet()) {
             Integer count = 0;
@@ -155,4 +146,9 @@ public class UserDbStorage implements UserStorage {
 
         return result;
     }
+
+    private String selectName(User user) {
+        return user.getName() != null && !user.getName().isEmpty() ? user.getName() : user.getLogin();
+    }
 }
+
