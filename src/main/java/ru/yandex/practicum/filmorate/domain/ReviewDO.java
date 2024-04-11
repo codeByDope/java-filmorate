@@ -8,8 +8,8 @@ import lombok.Value;
 @Builder(toBuilder = true)
 public class ReviewDO {
     @NonNull Long reviewId;
-    @NonNull Integer userId;
-    @NonNull Integer filmId;
+    @NonNull Long userId;
+    @NonNull Long filmId;
     String content;
     boolean isPositive;
     int useful;

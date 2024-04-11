@@ -20,7 +20,8 @@ public interface ReviewStorage {
     Collection<Review> getReviews(@Nullable Integer filmId, @Nullable Integer limit);
 
     default Review getReviewFromStorage(Long reviewId) {
-        return getReviewById(reviewId).orElseThrow(() -> new ReviewNotFoundException("Отзыв по id=" + reviewId + " не найден"));
+        return getReviewById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException("Отзыв по id=" + reviewId + " не найден"));
     }
 
     void addLikeToReview(Long reviewId, Integer userId);

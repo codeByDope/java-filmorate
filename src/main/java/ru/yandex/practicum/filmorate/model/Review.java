@@ -4,15 +4,20 @@ import lombok.Builder;
 import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 @Builder(toBuilder = true)
 @Value
 public class Review {
 
+    @Positive
     Long reviewId;
-    Integer userId;
-    Integer filmId;
+    @NotNull
+    Long userId;
+    @NotNull
+    Long filmId;
     @NotBlank String content;
-    boolean isPositive;
+    @NotNull Boolean isPositive;
     int useful;
 }

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.mapper;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.domain.ReviewDO;
 
@@ -21,11 +22,22 @@ public class ReviewRowMapper implements RowMapper<ReviewDO> {
     public ReviewDO mapRow(ResultSet rs, int rowNum) throws SQLException {
         return ReviewDO.builder()
                 .reviewId(rs.getLong(ID))
-                .filmId(rs.getInt(FILM_ID))
-                .userId(rs.getInt(USER_ID))
+                .filmId(rs.getLong(FILM_ID))
+                .userId(rs.getLong(USER_ID))
                 .content(rs.getString(CONTENT))
                 .isPositive(rs.getBoolean(IS_POSITIVE))
                 .useful(rs.getInt(USEFUL))
+                .build();
+    }
+
+    public ReviewDO mapRowSet(SqlRowSet rowSet) {
+        return ReviewDO.builder()
+                .reviewId(rowSet.getLong(ID))
+                .filmId(rowSet.getLong(FILM_ID))
+                .userId(rowSet.getLong(USER_ID))
+                .content(rowSet.getString(CONTENT))
+                .isPositive(rowSet.getBoolean(IS_POSITIVE))
+                .useful(rowSet.getInt(USEFUL))
                 .build();
     }
 }

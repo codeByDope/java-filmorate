@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.service.films.FilmService;
+import ru.yandex.practicum.filmorate.service.users.UserService;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -16,14 +18,20 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
+    private final UserService userService;
+    private final FilmService filmService;
 
     @Override
     public Review addReview(Review review) {
+        userService.getUserById(review.getUserId());
+        filmService.getById(review.getFilmId());
         return reviewStorage.addReview(review);
     }
 
     @Override
     public Review updateReview(Review review) {
+        userService.getUserById(review.getUserId());
+        filmService.getById(review.getFilmId());
         return reviewStorage.updateReview(review);
     }
 

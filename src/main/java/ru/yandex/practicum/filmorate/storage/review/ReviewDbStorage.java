@@ -6,6 +6,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.converter.ReviewDO2ReviewConverter;
@@ -15,6 +16,7 @@ import ru.yandex.practicum.filmorate.model.Review;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,13 +27,13 @@ import java.util.stream.Collectors;
 public class ReviewDbStorage implements ReviewStorage {
 
     private static final String ADD_REVIEW = "INSERT INTO review (user_id, film_id, content, is_positive, useful) VALUES (?, ?, ?, ?, ?)";
-    private static final String UPDATE_REVIEW = "UPDATE review SET user_id=?, film_id=?, content=?, is_positive=?, useful=? WHERE id=?";
+    private static final String UPDATE_REVIEW = "UPDATE review SET content=?, is_positive=? WHERE id=?";
     private static final String DELETE_REVIEW = "DELETE FROM review WHERE id=?";
     private static final String GET_REVIEW_BY_ID = "SELECT * FROM review WHERE id=%s";
     public static final String ADD_LIKE = "INSERT INTO likes (review_id, user_id) VALUES (?, ?)";
-    public static final String REMOVE_LIKE = "DELETE FROM likes WHERE review_id=?, user_id=?";
+    public static final String REMOVE_LIKE = "DELETE FROM likes WHERE review_id=? AND user_id=?";
     public static final String ADD_DISLIKE = "INSERT INTO dislikes (review_id, user_id) VALUES (?, ?)";
-    public static final String REMOVE_DISLIKE = "DELETE FROM dislikes WHERE review_id=?, user_id=?";
+    public static final String REMOVE_DISLIKE = "DELETE FROM dislikes WHERE review_id=? AND user_id=?";
 
     private final JdbcTemplate jdbcTemplate;
     private final ReviewRowMapper reviewRowMapper;
@@ -47,10 +49,10 @@ public class ReviewDbStorage implements ReviewStorage {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection
                     .prepareStatement(ADD_REVIEW, Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, review.getUserId());
-            ps.setInt(2, review.getFilmId());
+            ps.setLong(1, review.getUserId());
+            ps.setLong(2, review.getFilmId());
             ps.setString(3, review.getContent());
-            ps.setBoolean(4, review.isPositive());
+            ps.setBoolean(4, review.getIsPositive());
             ps.setInt(5, review.getUseful());
             return ps;
         }, keyHolder);
@@ -63,12 +65,10 @@ public class ReviewDbStorage implements ReviewStorage {
     public Review updateReview(Review review) {
 
         jdbcTemplate.update(UPDATE_REVIEW,
-                review.getUserId(),
-                review.getFilmId(),
                 review.getContent(),
-                review.isPositive(),
-                review.getUseful(),
-                review.getReviewId());
+                review.getIsPositive(),
+                review.getReviewId()
+        );
 
         return getReviewFromStorage(review.getReviewId());
 
@@ -95,8 +95,13 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Collection<Review> getReviews(@Nullable Integer filmId, @Nullable Integer limit) {
-        Collection<ReviewDO> reviewDOs = jdbcTemplate.queryForList(requestCreator.createRequest(filmId, limit), ReviewDO.class);
-        return reviewDOs.stream()
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(requestCreator.createRequest(filmId, limit));
+        Collection<ReviewDO> reviews = new ArrayList<>();
+        while (rowSet.next()){
+            ReviewDO reviewDO = reviewRowMapper.mapRowSet(rowSet);
+            reviews.add(reviewDO);
+        }
+        return reviews.stream()
                 .map(converter::convert)
                 .collect(Collectors.toList());
     }
