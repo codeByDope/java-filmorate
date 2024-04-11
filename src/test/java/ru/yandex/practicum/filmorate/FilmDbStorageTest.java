@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
 import ru.yandex.practicum.filmorate.mapper.MpaRatingRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
@@ -30,6 +31,7 @@ public class FilmDbStorageTest {
 
     private GenreStorage genreStorage;
     private RatingStorage ratingStorage;
+    private DirectorStorage directorStorage;
 
     @BeforeEach
     public void setUp() {
@@ -60,7 +62,8 @@ public class FilmDbStorageTest {
     @Test
     public void testAddFilm() {
 
-        FilmDbStorage filmDbStorage = new FilmDbStorage(new FilmRowMapper(genreStorage, ratingStorage), jdbcTemplate, genreStorage, ratingStorage);
+        FilmDbStorage filmDbStorage = new FilmDbStorage(new FilmRowMapper(genreStorage, ratingStorage, directorStorage),
+                jdbcTemplate, genreStorage, ratingStorage, directorStorage);
 
         Optional<Film> gottenFilm = filmDbStorage.getById(1L);
 

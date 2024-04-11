@@ -26,6 +26,7 @@ public class Film {
     private long duration;
     private Set<Genre> genres = new HashSet<>();
     private MpaRating mpa;
+    private Set<Director> directors = new HashSet<>();
 
     public static class Builder {
         private Long id;
@@ -35,6 +36,7 @@ public class Film {
         private long duration;
         private Set<Genre> genres;
         private MpaRating mpa;
+        private Set<Director> directors;
 
         public Builder id(Long id) {
             this.id = id;
@@ -71,6 +73,11 @@ public class Film {
             return this;
         }
 
+        public Builder directors(Set<Director> directors) {
+            this.directors = directors;
+            return this;
+        }
+
         public Film build() {
             Film film = new Film();
             film.id = this.id;
@@ -80,6 +87,7 @@ public class Film {
             film.duration = this.duration;
             film.genres = this.genres;
             film.mpa = this.mpa;
+            film.directors = this.directors;
             return film;
         }
     }

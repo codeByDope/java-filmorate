@@ -3,18 +3,25 @@ package ru.yandex.practicum.filmorate.service.films;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.director.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmHasAlreadyCreatedException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import javax.validation.ValidationException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class FilmServiceImpl implements FilmService {
     private final FilmStorage storage;
+    private final DirectorStorage directorStorage;
 
     @Override
     public List<Film> get() {
@@ -35,6 +42,7 @@ public class FilmServiceImpl implements FilmService {
         } else if (id != null && id < 0) {
             throw new IllegalArgumentException("Фильм не может иметь отрицательный ID!");
         }
+        checkDirectors(film);
         return storage.add(film);
     }
 
@@ -48,7 +56,33 @@ public class FilmServiceImpl implements FilmService {
         } else if (storage.getById(id).isEmpty()) {
             throw new FilmNotFoundException("Фильм с указанным ID не найден!");
         } else {
+            checkDirectors(film);
             return storage.update(film);
         }
     }
+
+    @Override
+    public List<Film> getDirectorFilms(int directorId, String sortBy) {
+        if (directorStorage.getById(directorId) == null) {
+            throw new DirectorNotFoundException("Режиссёра с таким id не существует");
+        }
+        if (sortBy.equals("likes")) {
+            return storage.getDirectorsFilmSortedByLikes(directorId);
+        } else {
+            return storage.getDirectorsFilmSortedByYears(directorId);
+        }
+    }
+
+    private void checkDirectors(Film film) {
+        if (film.getDirectors() != null) {
+            List<Integer> ids = film.getDirectors().stream()
+                    .map(Director::getId).collect(Collectors.toList());
+            Set<Director> directors = directorStorage.getByIds(ids);
+            if (ids.size() != directors.size()) {
+                throw new ValidationException("Неправильный режиссёр");
+            }
+            film.setDirectors(directors.stream().sorted((f1, f2) -> f1.getId() - f2.getId()).collect(Collectors.toSet()));
+        }
+    }
+
 }
