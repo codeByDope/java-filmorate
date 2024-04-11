@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.director;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,8 +17,9 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 public class DirectorDbStorage implements DirectorStorage {
-    private final JdbcOperations jdbcOperations;
     private final RowMapper<Director> mapper;
+    private final JdbcTemplate jdbcTemplate;
+
     private static final String SQL_GET_ALL = "select * from directors";
     private static final String SQL_GET_BY_ID = "select * from directors where id = ?";
     private static final String SQL_ADD = "insert into directors (name) values (?)";
@@ -32,12 +33,12 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public List<Director> getAll() {
-        return jdbcOperations.query(SQL_GET_ALL, mapper);
+        return jdbcTemplate.query(SQL_GET_ALL, mapper);
     }
 
     @Override
     public Director getById(int id) {
-        List<Director> directors = jdbcOperations.query(SQL_GET_BY_ID, mapper, id);
+        List<Director> directors = jdbcTemplate.query(SQL_GET_BY_ID, mapper, id);
         if (directors.size() != 1) {
             return null;
         }
@@ -47,7 +48,7 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public Director add(Director director) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcOperations.update(connection -> {
+        jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_ADD, new String[]{"id"});
             ps.setString(1, director.getName());
             return ps;
@@ -58,15 +59,15 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Director update(Director director) {
-        jdbcOperations.update(SQL_UPDATE, director.getName(), director.getId());
+        jdbcTemplate.update(SQL_UPDATE, director.getName(), director.getId());
         return director;
     }
 
     @Override
     public void delete(int id) {
 
-        jdbcOperations.update("delete from films_directors where director_id = ?", id);
-        jdbcOperations.update(SQL_DELETE, id);
+        jdbcTemplate.update("delete from films_directors where director_id = ?", id);
+        jdbcTemplate.update(SQL_DELETE, id);
     }
 
     @Override
@@ -83,6 +84,6 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Set<Director> getAllFilmDirectors(Long filmId) {
-        return new HashSet<>(jdbcOperations.query(SQL_GET_ALL_FILMS_DIRECTORS, mapper, filmId));
+        return new HashSet<>(jdbcTemplate.query(SQL_GET_ALL_FILMS_DIRECTORS, mapper, filmId));
     }
 }

@@ -6,10 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import ru.yandex.practicum.filmorate.mapper.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
 import ru.yandex.practicum.filmorate.mapper.MpaRatingRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
@@ -41,6 +43,7 @@ public class FilmDbStorageTest {
     private void loadTestData() {
         genreStorage = new GenreDbStorage(new GenreRowMapper(), jdbcTemplate);
         ratingStorage = new RatingDbStorage(new MpaRatingRowMapper(), jdbcTemplate);
+        directorStorage = new DirectorDbStorage(new DirectorRowMapper(), jdbcTemplate);
 
         jdbcTemplate.execute("MERGE INTO genres(id, title) VALUES (1, 'Комедия')");
         jdbcTemplate.execute("MERGE INTO genres(id, title) VALUES (2, 'Драма')");
