@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.exception.like.LikeHasAlreadyCreatedExcepti
 import ru.yandex.practicum.filmorate.exception.like.NotLikeException;
 import ru.yandex.practicum.filmorate.exception.rating.RatingHasAlreadyCreatedException;
 import ru.yandex.practicum.filmorate.exception.rating.RatingNotFoundException;
+import ru.yandex.practicum.filmorate.exception.review.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserHasAlreadyCreatedException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 
@@ -34,6 +35,13 @@ public class ErrorHandler {
     public Map<String, String> handleFilmExceptions(final RuntimeException e) {
         return Map.of("error", "Ошибка действия с фильмом",
                 "errorMessage", e.getMessage());
+    }
+
+    @ExceptionHandler(ReviewNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleReviewNotFoundExceptions(final ReviewNotFoundException exc) {
+        return Map.of("error", "Ошибка действия с ревью",
+                "errorMessage", exc.getMessage());
     }
 
     @ExceptionHandler({UserNotFoundException.class, UserHasAlreadyCreatedException.class, NotFriendException.class, AlreadyFriendsException.class})

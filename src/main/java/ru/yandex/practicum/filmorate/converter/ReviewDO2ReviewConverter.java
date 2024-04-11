@@ -14,7 +14,7 @@ public class ReviewDO2ReviewConverter {
                 .filmId(reviewDO.getFilmId())
                 .content(reviewDO.getContent())
                 .isPositive(reviewDO.isPositive())
-                .useful(reviewDO.getUseful())
+                .useful(reviewDO.getLikesNumber() - reviewDO.getDislikesNumber())
                 .build();
     }
 }

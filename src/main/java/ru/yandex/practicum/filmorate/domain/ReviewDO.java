@@ -12,5 +12,6 @@ public class ReviewDO {
     @NonNull Long filmId;
     String content;
     boolean isPositive;
-    int useful;
+    int likesNumber;
+    int dislikesNumber;
 }

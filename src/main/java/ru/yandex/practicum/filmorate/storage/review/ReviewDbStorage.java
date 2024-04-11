@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,15 @@ public class ReviewDbStorage implements ReviewStorage {
     private static final String ADD_REVIEW = "INSERT INTO review (user_id, film_id, content, is_positive, useful) VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_REVIEW = "UPDATE review SET content=?, is_positive=? WHERE id=?";
     private static final String DELETE_REVIEW = "DELETE FROM review WHERE id=?";
-    private static final String GET_REVIEW_BY_ID = "SELECT * FROM review WHERE id=%s";
+    private static final String GET_REVIEW_BY_ID = "SELECT r.*, " +
+            "COALESCE(l.like_count, 0) AS like_count, " +
+            "COALESCE(d.dislike_count, 0) AS dislike_count " +
+            "FROM review r " +
+            "LEFT JOIN " +
+            "(SELECT review_id, COUNT(DISTINCT user_id) AS like_count FROM likes GROUP BY review_id) l ON r.id = l.review_id\n" +
+            "LEFT JOIN " +
+            "(SELECT review_id, COUNT(DISTINCT user_id) AS dislike_count FROM dislikes GROUP BY review_id) d ON r.id = d.review_id\n" +
+            "WHERE r.id = %s";
     public static final String ADD_LIKE = "INSERT INTO likes (review_id, user_id) VALUES (?, ?)";
     public static final String REMOVE_LIKE = "DELETE FROM likes WHERE review_id=? AND user_id=?";
     public static final String ADD_DISLIKE = "INSERT INTO dislikes (review_id, user_id) VALUES (?, ?)";
@@ -97,12 +106,13 @@ public class ReviewDbStorage implements ReviewStorage {
     public Collection<Review> getReviews(@Nullable Integer filmId, @Nullable Integer limit) {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(requestCreator.createRequest(filmId, limit));
         Collection<ReviewDO> reviews = new ArrayList<>();
-        while (rowSet.next()){
+        while (rowSet.next()) {
             ReviewDO reviewDO = reviewRowMapper.mapRowSet(rowSet);
             reviews.add(reviewDO);
         }
         return reviews.stream()
                 .map(converter::convert)
+                .sorted(Comparator.comparing(Review::getUseful).reversed())
                 .collect(Collectors.toList());
     }
 
