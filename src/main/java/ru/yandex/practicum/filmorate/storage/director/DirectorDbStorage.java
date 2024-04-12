@@ -9,10 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.sql.PreparedStatement;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -37,12 +34,12 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Director getById(int id) {
+    public Optional<Director> getById(int id) {
         List<Director> directors = jdbcTemplate.query(SQL_GET_BY_ID, mapper, id);
         if (directors.size() != 1) {
-            return null;
+            return Optional.empty();
         }
-        return directors.get(0);
+        return Optional.of(directors.get(0));
     }
 
     @Override
@@ -72,14 +69,12 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Set<Director> getByIds(List<Integer> ids) {
-        Set<Director> genres = new HashSet<>();
+        Set<Director> directors = new HashSet<>();
         ids.forEach(id -> {
-            Director director = getById(id);
-            if (director != null) {
-                genres.add(director);
-            }
+            Optional<Director> director = getById(id);
+            director.ifPresent(directors::add);
         });
-        return genres;
+        return directors;
     }
 
     @Override

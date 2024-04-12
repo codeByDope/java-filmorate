@@ -3,12 +3,11 @@ package ru.yandex.practicum.filmorate.service.films;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.director.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmHasAlreadyCreatedException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
+import ru.yandex.practicum.filmorate.service.directors.DirectorService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.ValidationException;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FilmServiceImpl implements FilmService {
     private final FilmStorage storage;
-    private final DirectorStorage directorStorage;
+    private final DirectorService directorService;
 
     @Override
     public List<Film> get() {
@@ -37,7 +36,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Film add(Film film) {
         Long id = film.getId();
-        if (id != null && !storage.getById(id).isEmpty()) {
+        if (id != null && storage.getById(id).isPresent()) {
             throw new FilmHasAlreadyCreatedException("Фильм с таким ID уже существует!");
         } else if (id != null && id < 0) {
             throw new IllegalArgumentException("Фильм не может иметь отрицательный ID!");
@@ -63,9 +62,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getDirectorFilms(int directorId, String sortBy) {
-        if (directorStorage.getById(directorId) == null) {
-            throw new DirectorNotFoundException("Режиссёра с таким id не существует");
-        }
+        directorService.getById(directorId);
         if (sortBy.equals("likes")) {
             return storage.getDirectorsFilmSortedByLikes(directorId);
         } else {
@@ -77,12 +74,11 @@ public class FilmServiceImpl implements FilmService {
         if (film.getDirectors() != null) {
             List<Integer> ids = film.getDirectors().stream()
                     .map(Director::getId).collect(Collectors.toList());
-            Set<Director> directors = directorStorage.getByIds(ids);
+            Set<Director> directors = directorService.getByIds(ids);
             if (ids.size() != directors.size()) {
                 throw new ValidationException("Неправильный режиссёр");
             }
             film.setDirectors(directors.stream().sorted((f1, f2) -> f1.getId() - f2.getId()).collect(Collectors.toSet()));
         }
     }
-
 }

@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +23,8 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public Director getById(int id) {
-        Director director = directorStorage.getById(id);
-        if (director == null) {
-            throw new DirectorNotFoundException("Режиссёра с таким id не существует");
-        }
-        return director;
+        return directorStorage.getById(id)
+                .orElseThrow(() -> new DirectorNotFoundException("Режиссёрa с таким id не существует"));
     }
 
     @Override
@@ -39,17 +37,20 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public Director update(Director director) {
-        if (directorStorage.getById(director.getId()) == null) {
-            throw new DirectorNotFoundException("Режиссёрa с таким id не существует");
-        }
+        directorStorage.getById(director.getId())
+                .orElseThrow(() -> new DirectorNotFoundException("Режиссёрa с таким id не существует"));
         return directorStorage.update(director);
     }
 
     @Override
     public void delete(int id) {
-        if (directorStorage.getById(id) == null) {
-            throw new DirectorNotFoundException("Режиссёра с таким id не существует");
-        }
+        directorStorage.getById(id)
+                .orElseThrow(() -> new DirectorNotFoundException("Режиссёрa с таким id не существует"));
         directorStorage.delete(id);
+    }
+
+    @Override
+    public Set<Director> getByIds(List<Integer> ids) {
+        return directorStorage.getByIds(ids);
     }
 }
