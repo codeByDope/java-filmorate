@@ -13,8 +13,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @Qualifier("userDbStorage")
@@ -25,6 +24,14 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User add(User user) {
+        if (user.getId() == null) {
+            return addWithGeneratedId(user);
+        } else {
+            return addWithSpecifiedId(user);
+        }
+    }
+
+    private User addWithGeneratedId(User user) {
         String sql = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -32,12 +39,29 @@ public class UserDbStorage implements UserStorage {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getLogin());
-            ps.setString(3, user.getName());
+            ps.setString(3, user.getName() != null && !user.getName().isEmpty() ? user.getName() : user.getLogin());
             ps.setDate(4, Date.valueOf(user.getBirthday()));
             return ps;
         }, keyHolder);
 
         user.setId(keyHolder.getKey().longValue());
+        user.setName(user.getName() != null && !user.getName().isEmpty() ? user.getName() : user.getLogin()); // Обновляем имя пользователя на логин, если оно пустое
+        return user;
+    }
+
+    private User addWithSpecifiedId(User user) {
+        String sql = "INSERT INTO users (id, email, login, name, birthday) VALUES (?, ?, ?, ?, ?)";
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setLong(1, user.getId());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getLogin());
+            ps.setString(4, user.getName() != null && !user.getName().isEmpty() ? user.getName() : user.getLogin());
+            ps.setDate(5, Date.valueOf(user.getBirthday()));
+            return ps;
+        });
+
         return user;
     }
 
@@ -81,5 +105,54 @@ public class UserDbStorage implements UserStorage {
         } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Long> getRecommendations(Long id) {
+        String getListOfLikerSql = "SELECT * FROM likers;";
+        Map<Long, List<Long>> likerToFilmsMap = new HashMap<>();
+        Integer max = 0;
+        List<Long> result = new ArrayList<>();
+
+        //Заполняем likersToFilmsMap: Ключ - id лайкнувшего, Значение - список лайкнутых фильмов
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(getListOfLikerSql);
+        while (rs.next()) {
+            Long likerId = rs.getLong(2);
+            Long filmId = rs.getLong(1);
+            if (likerToFilmsMap.containsKey(likerId)) {
+                likerToFilmsMap.get(likerId).add(filmId);
+            } else {
+                List<Long> films = new ArrayList<>();
+                films.add(filmId);
+                likerToFilmsMap.put(likerId, films);
+            }
+        }
+
+        //Получаю список лайков пользователя, которому подбираем рекомендации
+        List<Long> likesOfUser = likerToFilmsMap.get(id);
+        /*Перебираем остальных юзеров, считаем количество сходств и одновременно сохраняем
+        нелайкнутые нашим юзером фильмы, потом проверяем, если счетчик больше максимального количества схождений,
+        значит, надо сохранить список нелайкнутых фильмов, так как это потеницальный результат
+         */
+        for (Map.Entry<Long, List<Long>> entry : likerToFilmsMap.entrySet()) {
+            Integer count = 0;
+            List<Long> notLikedFilmsId = new ArrayList<>();
+
+            if (!entry.getKey().equals(id)) {
+                for (Long filmId : entry.getValue()) {
+                    if (likesOfUser.contains(filmId)) {
+                        count++;
+                    } else {
+                        notLikedFilmsId.add(filmId);
+                    }
+                }
+            }
+
+            if (count > max) {
+                result = notLikedFilmsId;
+            }
+        }
+
+        return result;
     }
 }

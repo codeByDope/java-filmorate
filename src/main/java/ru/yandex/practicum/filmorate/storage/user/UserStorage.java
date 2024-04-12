@@ -15,4 +15,6 @@ public interface UserStorage {
     List<User> getAll();
 
     Optional<User> getById(Long id);
+
+    public List<Long> getRecommendations(Long id);
 }

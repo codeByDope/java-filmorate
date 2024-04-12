@@ -20,13 +20,18 @@ public class RatingDbStorage implements RatingStorage {
     private final RowMapper<MpaRating> mapper;
     private final JdbcTemplate jdbcTemplate;
 
+    private static final String INSERT_RATING_SQL = "INSERT INTO genres VALUES (?, ?)";
+    private static final String DELETE_RATING_SQL = "DELETE FROM MPA_ratings WHERE id = ?";
+    private static final String SELECT_ALL_RATINGS_SQL = "SELECT * FROM MPA_ratings";
+    private static final String SELECT_RATING_BY_FILM_ID_SQL = "SELECT mpa.* FROM MPA_ratings mpa JOIN films f ON mpa.id = f.rating_id WHERE f.id = ?";
+    private static final String SELECT_RATING_BY_ID_SQL = "SELECT * FROM MPA_ratings WHERE id = ?";
+
     @Override
     public MpaRating add(MpaRating rating) {
-        String sql = "INSERT INTO genres VALUES(?,?);";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(INSERT_RATING_SQL, Statement.RETURN_GENERATED_KEYS);
             ps.setString(2, rating.getName());
             return ps;
         }, keyHolder);
@@ -37,23 +42,17 @@ public class RatingDbStorage implements RatingStorage {
 
     @Override
     public void delete(Integer id) {
-        String sql = "DELETE FROM MPA_ratings WHERE id = ?;";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(DELETE_RATING_SQL, id);
     }
 
     @Override
     public List<MpaRating> getAll() {
-        String sql = "SELECT * FROM MPA_ratings;";
-        return jdbcTemplate.query(sql, mapper);
+        return jdbcTemplate.query(SELECT_ALL_RATINGS_SQL, mapper);
     }
 
     @Override
     public Optional<MpaRating> getByFilmId(Long id) {
-        String sql = "SELECT mpa.* \n" +
-                "FROM MPA_ratings mpa \n" +
-                "JOIN films f ON mpa.id = f.rating_id \n" +
-                "WHERE f.id = ?;";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_RATING_BY_FILM_ID_SQL, id);
 
         if (rs.next()) {
             MpaRating rating = new MpaRating(rs.getInt(1), rs.getString(2));
@@ -65,10 +64,7 @@ public class RatingDbStorage implements RatingStorage {
 
     @Override
     public Optional<MpaRating> getById(Integer id) {
-        String sql = "SELECT * \n" +
-                "FROM MPA_ratings \n" +
-                "WHERE id = ?;";
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, id);
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_RATING_BY_ID_SQL, id);
 
         if (rs.next()) {
             MpaRating rating = new MpaRating(rs.getInt(1), rs.getString(2));
