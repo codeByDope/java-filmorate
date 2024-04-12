@@ -28,10 +28,8 @@ public class ReviewController {
     }
 
     @DeleteMapping(ApiPathConstants.BY_ID_PATH)
-    public ResponseEntity<Review> delete(@PathVariable(name = "id") Integer id) {
+    public void delete(@PathVariable(name = "id") Integer id) {
         reviewService.deleteReview(id);
-        return ResponseEntity.status(200)
-                .build();
     }
 
     @GetMapping(ApiPathConstants.BY_ID_PATH)
