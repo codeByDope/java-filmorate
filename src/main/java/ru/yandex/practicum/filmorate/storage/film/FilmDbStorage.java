@@ -20,7 +20,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -145,8 +144,8 @@ public class FilmDbStorage implements FilmStorage {
                     .releaseDate(rs.getDate("release_date").toLocalDate())
                     .duration(rs.getInt("duration"))
                     .mpa(ratingStorage.getByFilmId(id).orElse(null))
-                    .genres(new ArrayList<>(genreStorage.getByFilmId(id)))
-                    .directors(new ArrayList<>(directorStorage.getAllFilmDirectors(id)))
+                    .genres(genreStorage.getByFilmId(id))
+                    .directors(directorStorage.getAllFilmDirectors(id))
                     .build();
 
             return Optional.of(film);
@@ -167,7 +166,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private void updateDirectors(Film film) {
         jdbcTemplate.update(SQL_DELETE_DIRECTORS, film.getId());
-        List<Director> directors = film.getDirectors().stream().distinct().collect(Collectors.toList());
+        List<Director> directors = film.getDirectors();
         directors.forEach(x -> jdbcTemplate.update(SQL_ADD_DIRECTORS, film.getId(), x.getId()));
     }
 }

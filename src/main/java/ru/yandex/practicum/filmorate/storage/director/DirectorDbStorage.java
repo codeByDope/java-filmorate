@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -67,7 +68,6 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void delete(int id) {
-
         jdbcTemplate.update("delete from films_directors where director_id = ?", id);
         jdbcTemplate.update(SQL_DELETE, id);
     }
@@ -79,11 +79,11 @@ public class DirectorDbStorage implements DirectorStorage {
             Optional<Director> director = getById(id);
             director.ifPresent(directors::add);
         });
-        return directors;
+        return directors.stream().distinct().collect(Collectors.toList());
     }
 
     @Override
     public List<Director> getAllFilmDirectors(Long filmId) {
-        return new ArrayList<>(jdbcTemplate.query(SQL_GET_ALL_FILMS_DIRECTORS, mapper, filmId));
+        return jdbcTemplate.query(SQL_GET_ALL_FILMS_DIRECTORS, mapper, filmId);
     }
 }
