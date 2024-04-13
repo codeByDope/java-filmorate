@@ -51,4 +51,13 @@ public class FilmServiceImpl implements FilmService {
             return storage.update(film);
         }
     }
+
+    @Override
+    public void delete(Long id) {
+        if (storage.getById(id).isEmpty()) {
+            throw new FilmNotFoundException("Фильм с указаным ID не найден");
+        } else {
+            storage.delete(id);
+        }
+    }
 }

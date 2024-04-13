@@ -64,6 +64,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void delete(Long id) {
+        if (storage.getById(id).isEmpty()) {
+            throw new UserNotFoundException("Пользователь с указанным ID не найден!");
+        } else {
+            storage.delete(id);
+        }
+    }
+
     public List<Film> getRecommendations(Long id) {
         storage.getById(id);
         List<Film> films = new ArrayList<>();
@@ -74,6 +82,4 @@ public class UserServiceImpl implements UserService {
         log.info("Рекомендации для пользователя {} : {}", id, films);
         return films;
     }
-
-
 }
