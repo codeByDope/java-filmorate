@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.films.FilmService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Slf4j
@@ -40,7 +42,8 @@ public class FilmController {
         log.info("Запрошено обновление фильма " + film.getId());
         return service.update(film);
     }
-
+    @NotNull
+    @Positive
     @DeleteMapping("/{id}")
     public void deleteFilmById(@PathVariable Long id) {
         log.info("Было запрошено удаление фильма с id " + id);

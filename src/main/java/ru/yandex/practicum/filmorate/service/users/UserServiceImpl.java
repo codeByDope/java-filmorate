@@ -61,11 +61,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID пользователя не указан!");
-        } else if (id < 0) {
-            throw new IllegalArgumentException("ID пользователя не может быть отрицательным!");
-        } else if (storage.getById(id).isEmpty()) {
+        if (storage.getById(id).isEmpty()) {
             throw new UserNotFoundException("Пользователь с указанным ID не найден!");
         } else {
             storage.delete(id);

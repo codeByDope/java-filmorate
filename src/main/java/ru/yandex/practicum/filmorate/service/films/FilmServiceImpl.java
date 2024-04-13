@@ -54,11 +54,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public void delete(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID фильма не указан");
-        } else if (id < 0) {
-            throw new IllegalArgumentException("ID фильма не иожет быть отрицательным значением");
-        } else if (storage.getById(id).isEmpty()) {
+        if (storage.getById(id).isEmpty()) {
             throw new FilmNotFoundException("Фильм с указаным ID не найден");
         } else {
             storage.delete(id);
