@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -20,17 +21,14 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 @Qualifier("filmDbStorage")
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
-    private final RowMapper<Film> mapper;
+    private final FilmRowMapper mapper;
     private final JdbcTemplate jdbcTemplate;
     private final GenreStorage genreStorage;
     private final RatingStorage ratingStorage;
@@ -103,13 +101,13 @@ public class FilmDbStorage implements FilmStorage {
     public Film update(Film film) {
         Long filmId = film.getId();
 
-        Set<Genre> genres = new HashSet<>();
-        for (Genre genre : film.getGenres()) {
+        List<Genre> genres = film.getGenres().stream().distinct().collect(Collectors.toList());
+        for (Genre genre : genres) {
             Genre g = genreStorage.getById(genre.getId()).orElseThrow(() ->
                     new ValidationException("Неправильно набран рейтинг!"));
-            genres.add(g);
+            genre.setName(g.getName());
         }
-        film.setGenres(genres.stream().sorted((f1, f2) -> f1.getId() - f2.getId()).collect(Collectors.toSet()));
+        film.setGenres(genres.stream().sorted(Comparator.comparing(Genre::getId)).collect(Collectors.toList()));
 
         jdbcTemplate.update(DELETE_GENRES_SQL, filmId);
 
@@ -145,8 +143,8 @@ public class FilmDbStorage implements FilmStorage {
                     .releaseDate(rs.getDate("release_date").toLocalDate())
                     .duration(rs.getInt("duration"))
                     .mpa(ratingStorage.getByFilmId(id).orElse(null))
-                    .genres(new HashSet<>(genreStorage.getByFilmId(id)))
-                    .directors(new HashSet<>(directorStorage.getAllFilmDirectors(id)))
+                    .genres(new ArrayList<>(genreStorage.getByFilmId(id)))
+                    .directors(new ArrayList<>(directorStorage.getAllFilmDirectors(id)))
                     .build();
 
             return Optional.of(film);
@@ -167,9 +165,7 @@ public class FilmDbStorage implements FilmStorage {
 
     private void updateDirectors(Film film) {
         jdbcTemplate.update(SQL_DELETE_DIRECTORS, film.getId());
-        Set<Director> directors = film.getDirectors();
-        if (directors != null) {
-            directors.forEach(x -> jdbcTemplate.update(SQL_ADD_DIRECTORS, film.getId(), x.getId()));
-        }
+        List<Director> directors = film.getDirectors().stream().distinct().collect(Collectors.toList());
+        directors.forEach(x -> jdbcTemplate.update(SQL_ADD_DIRECTORS, film.getId(), x.getId()));
     }
 }

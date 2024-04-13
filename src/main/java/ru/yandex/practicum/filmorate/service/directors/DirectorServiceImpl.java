@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +49,7 @@ public class DirectorServiceImpl implements DirectorService {
     }
 
     @Override
-    public Set<Director> getByIds(List<Integer> ids) {
+    public List<Director> getByIds(List<Integer> ids) {
         return directorStorage.getByIds(ids);
     }
 }

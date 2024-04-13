@@ -6,13 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.directors.DirectorService;
+import ru.yandex.practicum.filmorate.utils.ApiPathConstants;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/directors")
+@RequestMapping(ApiPathConstants.DIRECTORS_PATH)
 @Slf4j
 public class DirectorController {
     private final DirectorService service;
@@ -23,7 +24,7 @@ public class DirectorController {
         return service.getAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ApiPathConstants.BY_ID_PATH)
     public Director getById(@PathVariable int id) {
         log.info("Был запрошен режиссёр c id {}", id);
         return service.getById(id);
@@ -42,7 +43,7 @@ public class DirectorController {
         return service.update(director);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(ApiPathConstants.BY_ID_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
         log.info("Запрошено удаление режиссёра с id {}", id);

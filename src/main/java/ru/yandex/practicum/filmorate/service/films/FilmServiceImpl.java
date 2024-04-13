@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.service.directors.DirectorService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.ValidationException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -74,11 +75,13 @@ public class FilmServiceImpl implements FilmService {
         if (film.getDirectors() != null) {
             List<Integer> ids = film.getDirectors().stream()
                     .map(Director::getId).collect(Collectors.toList());
-            Set<Director> directors = directorService.getByIds(ids);
+            List<Director> directors = directorService.getByIds(ids);
             if (ids.size() != directors.size()) {
                 throw new ValidationException("Неправильный режиссёр");
             }
-            film.setDirectors(directors.stream().sorted((f1, f2) -> f1.getId() - f2.getId()).collect(Collectors.toSet()));
+            film.setDirectors(directors.stream()
+                    .sorted(Comparator.comparing(Director::getId))
+                    .collect(Collectors.toList()));
         }
     }
 }

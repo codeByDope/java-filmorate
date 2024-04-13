@@ -2,10 +2,11 @@ package ru.yandex.practicum.filmorate.storage.director;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.director.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.mapper.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.sql.PreparedStatement;
@@ -14,7 +15,7 @@ import java.util.*;
 @Component
 @RequiredArgsConstructor
 public class DirectorDbStorage implements DirectorStorage {
-    private final RowMapper<Director> mapper;
+    private final DirectorRowMapper mapper;
     private final JdbcTemplate jdbcTemplate;
 
     private static final String SQL_GET_ALL = "select * from directors";
@@ -50,8 +51,9 @@ public class DirectorDbStorage implements DirectorStorage {
             ps.setString(1, director.getName());
             return ps;
         }, keyHolder);
-        director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-        return director;
+        int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
+        return getById(id)
+                .orElseThrow(() -> new DirectorNotFoundException("Режиссёрa с таким id не существует"));
     }
 
     @Override
@@ -68,8 +70,8 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Set<Director> getByIds(List<Integer> ids) {
-        Set<Director> directors = new HashSet<>();
+    public List<Director> getByIds(List<Integer> ids) {
+        List<Director> directors = new ArrayList<>();
         ids.forEach(id -> {
             Optional<Director> director = getById(id);
             director.ifPresent(directors::add);
@@ -78,7 +80,7 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Set<Director> getAllFilmDirectors(Long filmId) {
-        return new HashSet<>(jdbcTemplate.query(SQL_GET_ALL_FILMS_DIRECTORS, mapper, filmId));
+    public List<Director> getAllFilmDirectors(Long filmId) {
+        return new ArrayList<>(jdbcTemplate.query(SQL_GET_ALL_FILMS_DIRECTORS, mapper, filmId));
     }
 }
