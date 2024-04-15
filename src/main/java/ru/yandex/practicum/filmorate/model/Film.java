@@ -8,8 +8,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class Film {
@@ -24,8 +24,9 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Длительность фильма не может быть отрицательной")
     private long duration;
-    private Set<Genre> genres = new HashSet<>();
+    private List<Genre> genres = new ArrayList<>();
     private MpaRating mpa;
+    private List<Director> directors = new ArrayList<>();
 
     public static class Builder {
         private Long id;
@@ -33,8 +34,9 @@ public class Film {
         private String description;
         private LocalDate releaseDate;
         private long duration;
-        private Set<Genre> genres;
+        private List<Genre> genres;
         private MpaRating mpa;
+        private List<Director> directors;
 
         public Builder id(Long id) {
             this.id = id;
@@ -61,13 +63,18 @@ public class Film {
             return this;
         }
 
-        public Builder genres(Set<Genre> genres) {
+        public Builder genres(List<Genre> genres) {
             this.genres = genres;
             return this;
         }
 
         public Builder mpa(MpaRating mpa) {
             this.mpa = mpa;
+            return this;
+        }
+
+        public Builder directors(List<Director> directors) {
+            this.directors = directors;
             return this;
         }
 
@@ -80,6 +87,7 @@ public class Film {
             film.duration = this.duration;
             film.genres = this.genres;
             film.mpa = this.mpa;
+            film.directors = this.directors;
             return film;
         }
     }

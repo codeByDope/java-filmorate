@@ -42,6 +42,12 @@ public class FilmController {
         log.info("Запрошено обновление фильма " + film.getId());
         return service.update(film);
     }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getDirectorsFilmSortedByLikes(@PathVariable int directorId, @RequestParam String sortBy) {
+        return service.getDirectorFilms(directorId, sortBy);
+    }
+
     @NotNull
     @Positive
     @DeleteMapping("/{id}")
