@@ -47,7 +47,7 @@ public class FilmController {
     public List<Film> getDirectorsFilmSortedByLikes(@PathVariable int directorId, @RequestParam String sortBy) {
         return service.getDirectorFilms(directorId, sortBy);
     }
-  
+
     @NotNull
     @Positive
     @DeleteMapping("/{id}")
