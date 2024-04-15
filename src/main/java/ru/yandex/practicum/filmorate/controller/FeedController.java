@@ -20,7 +20,7 @@ public class FeedController {
 
     @GetMapping("/{id}/feed")
     public List<Feed> getAll(@PathVariable Long id) {
-        log.info("Был запрошен пользователь с ID");
+        log.info("Запрос ленты событий для пользователя с Id {}", id);
         return service.getAllByUserId(id);
     }
 }
