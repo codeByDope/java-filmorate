@@ -3,7 +3,10 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.model.validation.ValidReleaseDate;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,7 @@ public class Film {
     private long duration;
     private List<Genre> genres = new ArrayList<>();
     private MpaRating mpa;
+    private List<Director> directors = new ArrayList<>();
 
     public static class Builder {
         private Long id;
@@ -32,6 +36,7 @@ public class Film {
         private long duration;
         private List<Genre> genres;
         private MpaRating mpa;
+        private List<Director> directors;
 
         public Builder id(Long id) {
             this.id = id;
@@ -68,6 +73,11 @@ public class Film {
             return this;
         }
 
+        public Builder directors(List<Director> directors) {
+            this.directors = directors;
+            return this;
+        }
+
         public Film build() {
             Film film = new Film();
             film.id = this.id;
@@ -77,6 +87,7 @@ public class Film {
             film.duration = this.duration;
             film.genres = this.genres;
             film.mpa = this.mpa;
+            film.directors = this.directors;
             return film;
         }
     }

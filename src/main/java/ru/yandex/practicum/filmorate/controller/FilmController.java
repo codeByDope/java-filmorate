@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.service.films.FilmService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Slf4j
@@ -44,6 +46,11 @@ public class FilmController {
         return service.update(film);
     }
 
+    @GetMapping("/director/{directorId}")
+    public List<Film> getDirectorsFilmSortedByLikes(@PathVariable int directorId, @RequestParam String sortBy) {
+        return service.getDirectorFilms(directorId, sortBy);
+    }
+
     @GetMapping(value = POPULAR_FILMS_PATH, params = {"count"})
     public List<Film> getMostPopularFilms(@RequestParam(defaultValue = "10") Long count) {
         return service.getMostPopularFilms(count);
@@ -58,4 +65,13 @@ public class FilmController {
     }
 
 
+}
+
+    @NotNull
+    @Positive
+    @DeleteMapping("/{id}")
+    public void deleteFilmById(@PathVariable Long id) {
+        log.info("Было запрошено удаление фильма с id " + id);
+        service.delete(id);
+    }
 }

@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.exception.director.DirectorHasAlreadyCreatedException;
+import ru.yandex.practicum.filmorate.exception.director.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmHasAlreadyCreatedException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.friend.AlreadyFriendsException;
@@ -29,7 +31,9 @@ public class ErrorHandler {
         return Map.of("Ошибка валидации", e.getMessage());
     }
 
-    @ExceptionHandler({FilmNotFoundException.class, FilmHasAlreadyCreatedException.class, NotLikeException.class, LikeHasAlreadyCreatedException.class})
+    @ExceptionHandler({FilmNotFoundException.class, FilmHasAlreadyCreatedException.class,
+            NotLikeException.class, LikeHasAlreadyCreatedException.class,
+            DirectorNotFoundException.class, DirectorHasAlreadyCreatedException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleFilmExceptions(final RuntimeException e) {
         return Map.of("error", "Ошибка действия с фильмом",
