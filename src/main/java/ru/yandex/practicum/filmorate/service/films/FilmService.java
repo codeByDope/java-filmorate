@@ -12,4 +12,8 @@ public interface FilmService {
     Film add(Film film);
 
     Film update(Film film);
+
+    List<Film> getDirectorFilms(int directorId, String sortBy);
+
+    void delete(Long id);
 }
