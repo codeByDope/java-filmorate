@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/users")
 @RestController
 public class FeedController {
-    private FeedService service;
+    private final FeedService service;
 
     @GetMapping("/{id}/feed")
     public List<Feed> getAll(@PathVariable Long id) {
