@@ -3,8 +3,9 @@ package ru.yandex.practicum.filmorate.service.feed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Feed;
-import ru.yandex.practicum.filmorate.service.friends.FriendService;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.service.users.UserService;
 import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 
@@ -15,8 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FeedServiceImpl implements FeedService{
     private final FeedStorage storage;
-    private final FriendService friendService;
     private final UserService userService;
+
+    @Override
+    public Feed add(Long userId, Long entityId, EventType et, OperationType ot) {
+        log.info("Пользователь {} добавил в друзья пользователя {}", userId, entityId);
+        return storage.add(userId, entityId, et, ot);
+    }
 
     @Override
     public List<Feed> getAllByUserId(Long userId) {
