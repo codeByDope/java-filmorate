@@ -200,7 +200,6 @@ public class FilmDbStorage implements FilmStorage {
         }
         return filmsSortedByPopularity;
     }
-}
 
     @Override
     public List<Film> getDirectorsFilmSortedByYears(int directorId) {

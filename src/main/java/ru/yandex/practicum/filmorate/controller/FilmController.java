@@ -7,9 +7,9 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.films.FilmService;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -46,6 +46,14 @@ public class FilmController {
         return service.update(film);
     }
 
+    @NotNull
+    @Positive
+    @DeleteMapping("/{id}")
+    public void deleteFilmById(@PathVariable Long id) {
+        log.info("Было запрошено удаление фильма с id " + id);
+        service.delete(id);
+    }
+
     @GetMapping("/director/{directorId}")
     public List<Film> getDirectorsFilmSortedByLikes(@PathVariable int directorId, @RequestParam String sortBy) {
         return service.getDirectorFilms(directorId, sortBy);
@@ -56,7 +64,7 @@ public class FilmController {
         return service.getMostPopularFilms(count);
     }
 
-    @GetMapping(value = POPULAR_FILMS_PATH, params = { "count", "genreId", "year"})
+    @GetMapping(value = POPULAR_FILMS_PATH, params = {"count", "genreId", "year"})
     public Collection<Film> getPopularByYearAndGenre(@RequestParam(name = "count") Integer count,
                                                      @RequestParam(name = "genreId") Integer genreId,
                                                      @RequestParam(name = "year") Integer year) {
@@ -64,14 +72,4 @@ public class FilmController {
         return service.getPopular(count, genreId, year);
     }
 
-
-}
-
-    @NotNull
-    @Positive
-    @DeleteMapping("/{id}")
-    public void deleteFilmById(@PathVariable Long id) {
-        log.info("Было запрошено удаление фильма с id " + id);
-        service.delete(id);
-    }
 }

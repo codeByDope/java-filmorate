@@ -61,9 +61,4 @@ public class LikersDbStorage implements LikerStorage {
 
         return jdbcTemplate.query(SELECT_FILMS_BY_LIKER_ID_SQL, new Object[]{id}, filmMapper);
     }
-
-    @Override
-    public List<Film> getMostPopularFilms(Long count) {
-        return jdbcTemplate.query(SELECT_MOST_POPULAR_FILMS_SQL, new Object[]{count}, filmMapper);
-    }
 }
