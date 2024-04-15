@@ -51,6 +51,6 @@ public class FeedDbStorage implements FeedStorage{
     @Override
     public List<Feed> getAllByUserId(Long userId) {
         String sql = "SELECT * FROM feed WHERE user_id IN (SELECT friend_user_id FROM friends WHERE main_user_id = ?)";
-        return jdbcTemplate.query(sql, mapper);
+        return jdbcTemplate.query(sql, mapper, userId);
     }
 }
