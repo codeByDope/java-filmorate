@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.service.films;
 
+import org.springframework.lang.Nullable;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface FilmService {
@@ -22,5 +22,4 @@ public interface FilmService {
                                    @Nullable Integer genreId,
                                    @Nullable Integer year);
 
-    Collection<Film> getPopular(Integer count, Integer genreId, Integer year);
 }

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service.films;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.film.FilmHasAlreadyCreatedException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
@@ -12,7 +13,6 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.ValidationException;
 import java.util.Comparator;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,13 +94,11 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getMostPopularFilms(Long count) {
+    public List<Film> getMostPopularFilms(Long count,
+                                          @Nullable Integer genreId,
+                                          @Nullable Integer year) {
         log.info("Запрошены {} наиболее популярных фильмов", count);
-        return storage.getMostPopularFilms(count);
+        return storage.getMostPopularFilms(count, genreId, year);
     }
 
-    @Override
-    public Collection<Film> getPopular(Integer count, Integer genreId, Integer year) {
-        return storage.getPopular(count, genreId, year);
-    }
 }

@@ -10,8 +10,8 @@ import ru.yandex.practicum.filmorate.service.films.FilmService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -53,7 +53,7 @@ public class FilmController {
         service.delete(id);
     }
 
-    @GetMapping("/director/{directorId}")
+    @GetMapping(ApiPathConstants.FILM_BY_DIRECTOR_PATH)
     public List<Film> getDirectorsFilmSortedByLikes(@PathVariable int directorId, @RequestParam String sortBy) {
         return service.getDirectorFilms(directorId, sortBy);
     }
