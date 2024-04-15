@@ -31,6 +31,13 @@ public class FilmController {
         return service.getById(id);
     }
 
+    @GetMapping("/search")
+    public List<Film> search(@RequestParam String query,
+                             @RequestParam List<String> by) {
+        log.info("Был запрошен поиск фильмов");
+        return service.search(query, by);
+    }
+
     @PostMapping
     public Film add(@Valid @RequestBody Film film) {
         log.info("Запрошено добавление фильма " + film.getName());

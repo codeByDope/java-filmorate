@@ -50,16 +50,35 @@ public class FilmDbStorage implements FilmStorage {
             "where fd.director_id = ? " +
             "group by f.id " +
             "order by count(l.film_id) desc";
-
     private static final String SQL_GET_DIRECTOR_FILMS_SORTED_BY_YEARS = "select f.*, m.* from films as f " +
             "join mpa_ratings as m on m.id = f.rating_id " +
             "join films_directors as fd on fd.film_id = f.id " +
             "where fd.director_id = ? " +
             "order by f.release_date";
-
     private static final String SQL_ADD_DIRECTORS = "insert into films_directors (film_id, director_id) values (?, ?)";
     private static final String SQL_DELETE_DIRECTORS = "delete from films_directors where film_id = ?";
-
+    private static final String FIND_MOST_POPULAR_FILMS_BY_NAME_SQL = "SELECT f.* " +
+            "FROM films AS f " +
+            "LEFT JOIN likers AS l ON l.film_id = f.id " +
+            "WHERE LOWER(f.title) LIKE LOWER(?) " +
+            "GROUP BY f.id " +
+            "ORDER BY COUNT(l.film_id) DESC";
+    private static final String FIND_MOST_POPULAR_FILMS_BY_DIRECTOR_SQL = "SELECT f.* " +
+            "FROM films AS f " +
+            "LEFT JOIN likers AS l ON l.film_id = f.id " +
+            "LEFT JOIN films_directors AS fd ON fd.film_id=f.id " +
+            "LEFT JOIN directors AS d ON fd.director_id=d.id " +
+            "WHERE LOWER(d.name) LIKE LOWER(?)" +
+            "GROUP BY f.id " +
+            "ORDER BY COUNT(l.film_id) DESC";
+    private static final String FIND_MOST_POPULAR_FILMS_BY_NAME_AND_DIRECTOR_SQL = "SELECT f.* " +
+            "FROM films AS f " +
+            "LEFT JOIN likers AS l ON l.film_id = f.id " +
+            "LEFT JOIN films_directors AS fd ON fd.film_id=f.id " +
+            "LEFT JOIN directors AS d ON fd.director_id=d.id " +
+            "WHERE (LOWER(d.name) LIKE LOWER(?) OR LOWER(f.title) LIKE LOWER(?)) " +
+            "GROUP BY f.id " +
+            "ORDER BY COUNT(l.film_id) DESC";
 
     @Override
     public Film add(Film film) {
@@ -157,6 +176,19 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getDirectorsFilmSortedByLikes(int directorId) {
         return jdbcTemplate.query(SQL_GET_DIRECTOR_FILMS_SORTED_BY_LIKES, mapper, directorId);
+    }
+
+    @Override
+    public List<Film> search(String query, List<String> by) {
+        String updatedQuery = "%" + query + "%";
+        if (by.contains("director") && by.contains("title")) {
+            return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_NAME_AND_DIRECTOR_SQL, mapper,
+                    updatedQuery, updatedQuery);
+        } else if (by.contains("title")) {
+            return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_NAME_SQL, mapper, updatedQuery);
+        } else {
+            return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_DIRECTOR_SQL, mapper, updatedQuery);
+        }
     }
 
     @Override
