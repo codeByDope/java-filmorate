@@ -3,7 +3,10 @@ package ru.yandex.practicum.filmorate.service.friends;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.feed.FeedService;
 import ru.yandex.practicum.filmorate.service.users.UserService;
 import ru.yandex.practicum.filmorate.storage.friends.FriendsStorage;
 
@@ -15,6 +18,7 @@ import java.util.List;
 public class FriendServiceImpl implements FriendService {
     private final FriendsStorage storage;
     private final UserService userService;
+    private final FeedService feedService;
 
     @Override
     public void add(Long userId, Long friendId) {
@@ -24,6 +28,7 @@ public class FriendServiceImpl implements FriendService {
         userService.getUserById(friendId);
         storage.add(userId, friendId);
         log.info("Пользователь {} добавил в друзья пользователя {}", userId, friendId);
+        feedService.add(userId, friendId, EventType.FRIEND, OperationType.ADD);
     }
 
     @Override
@@ -33,6 +38,7 @@ public class FriendServiceImpl implements FriendService {
         userService.getUserById(friendId);
         storage.remove(userId, friendId);
         log.info("Пользователь {} удалил из друзей {}", userId, friendId);
+        feedService.add(userId, friendId, EventType.FRIEND, OperationType.REMOVE);
     }
 
     @Override
