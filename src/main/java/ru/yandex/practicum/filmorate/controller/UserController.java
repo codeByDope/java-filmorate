@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.users.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @Slf4j
@@ -38,6 +40,14 @@ public class UserController {
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
         return service.updateUser(user);
+    }
+
+    @NotNull
+    @Positive
+    @DeleteMapping("/{id}")
+    public void deleteUserById(@PathVariable Long id) {
+        log.info("Было запрошено удаление пользователя с id " + id);
+        service.delete(id);
     }
 
     @GetMapping("/{id}/recommendations")

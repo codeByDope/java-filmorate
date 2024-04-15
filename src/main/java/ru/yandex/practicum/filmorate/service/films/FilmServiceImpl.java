@@ -70,6 +70,14 @@ public class FilmServiceImpl implements FilmService {
         }
     }
 
+    public void delete(Long id) {
+        if (storage.getById(id).isEmpty()) {
+            throw new FilmNotFoundException("Фильм с указаным ID не найден");
+        } else {
+            storage.delete(id);
+        }
+    }
+  
     private void checkDirectors(Film film) {
         if (film.getDirectors() != null) {
             List<Integer> ids = film.getDirectors().stream()
