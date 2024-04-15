@@ -77,7 +77,7 @@ public class FilmServiceImpl implements FilmService {
             storage.delete(id);
         }
     }
-  
+
     private void checkDirectors(Film film) {
         if (film.getDirectors() != null) {
             List<Integer> ids = film.getDirectors().stream()
