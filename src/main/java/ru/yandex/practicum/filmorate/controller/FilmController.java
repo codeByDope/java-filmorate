@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.films.FilmService;
 
@@ -14,12 +15,10 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/films")
+@RequestMapping(ApiPathConstants.FILM_PATH)
 @RestController
 public class FilmController {
     private final FilmService service;
-
-    private static final String POPULAR_FILMS_PATH = "/popular";
 
     @GetMapping
     public List<Film> get() {
@@ -27,7 +26,7 @@ public class FilmController {
         return service.get();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ApiPathConstants.BY_ID_PATH)
     public Film getFilmById(@PathVariable Long id) {
         log.info("Был запрошен фильм с id " + id);
         System.out.println(service.getById(id));
@@ -48,7 +47,7 @@ public class FilmController {
 
     @NotNull
     @Positive
-    @DeleteMapping("/{id}")
+    @DeleteMapping(ApiPathConstants.BY_ID_PATH)
     public void deleteFilmById(@PathVariable Long id) {
         log.info("Было запрошено удаление фильма с id " + id);
         service.delete(id);
@@ -59,17 +58,13 @@ public class FilmController {
         return service.getDirectorFilms(directorId, sortBy);
     }
 
-    @GetMapping(value = POPULAR_FILMS_PATH, params = {"count"})
-    public List<Film> getMostPopularFilms(@RequestParam(defaultValue = "10") Long count) {
-        return service.getMostPopularFilms(count);
+    @GetMapping(value = ApiPathConstants.POPULAR_FILMS_PATH)
+    public List<Film> getMostPopularFilms(@RequestParam(name = "count", required = false) String count,
+                                          @RequestParam(name = "genreId", required = false) Integer genreId,
+                                          @RequestParam(name = "year", required = false) Integer year) {
+        Long countValue = Optional.ofNullable(count)
+                .map(Long::parseLong)
+                .orElse(10L);
+        return service.getMostPopularFilms(countValue, genreId, year);
     }
-
-    @GetMapping(value = POPULAR_FILMS_PATH, params = {"count", "genreId", "year"})
-    public Collection<Film> getPopularByYearAndGenre(@RequestParam(name = "count") Integer count,
-                                                     @RequestParam(name = "genreId") Integer genreId,
-                                                     @RequestParam(name = "year") Integer year) {
-        log.info(String.format("Запрошен список из %s в жанре %s за %s год", count, genreId, year));
-        return service.getPopular(count, genreId, year);
-    }
-
 }

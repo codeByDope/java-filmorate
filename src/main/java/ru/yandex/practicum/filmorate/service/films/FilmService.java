@@ -17,7 +17,10 @@ public interface FilmService {
     List<Film> getDirectorFilms(int directorId, String sortBy);
 
     void delete(Long id);
-    List<Film> getMostPopularFilms(Long count);
+
+    List<Film> getMostPopularFilms(Long count,
+                                   @Nullable Integer genreId,
+                                   @Nullable Integer year);
 
     Collection<Film> getPopular(Integer count, Integer genreId, Integer year);
 }
