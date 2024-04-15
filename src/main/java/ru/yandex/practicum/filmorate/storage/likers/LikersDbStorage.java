@@ -61,18 +61,4 @@ public class LikersDbStorage implements LikerStorage {
         String sql = "SELECT f.* FROM films f JOIN likers l ON f.id = l.film_id WHERE l.liker_d = ?;";
         return jdbcTemplate.query(sql, new Object[]{id}, filmMapper);
     }
-
-    @Override
-    public List<Film> getMostPopularFilms(Long count) {
-        String sql = "SELECT f.*\n" +
-                "FROM films AS f\n" +
-                "INNER JOIN (\n" +
-                "    SELECT film_id, COUNT(liker_id) AS count_likes\n" +
-                "    FROM likers\n" +
-                "    GROUP BY film_id\n" +
-                "    ORDER BY count_likes DESC\n" +
-                "    LIMIT ?\n" +
-                ") AS top_films ON f.id = top_films.film_id;";
-        return jdbcTemplate.query(sql, new Object[]{count}, filmMapper);
-    }
 }

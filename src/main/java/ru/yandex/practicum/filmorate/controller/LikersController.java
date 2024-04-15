@@ -26,9 +26,4 @@ public class LikersController {
         service.delete(id, userId);
         return true;
     }
-
-    @GetMapping("/popular")
-    public List<Film> getMostPopularFilms(@RequestParam(defaultValue = "10") Long count) {
-        return service.getMostPopularFilms(count);
-    }
 }

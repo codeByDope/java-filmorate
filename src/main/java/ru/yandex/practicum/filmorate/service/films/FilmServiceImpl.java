@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -50,5 +51,16 @@ public class FilmServiceImpl implements FilmService {
         } else {
             return storage.update(film);
         }
+    }
+
+    @Override
+    public List<Film> getMostPopularFilms(Long count) {
+        log.info("Запрошены {} наиболее популярных фильмов", count);
+        return storage.getMostPopularFilms(count);
+    }
+
+    @Override
+    public Collection<Film> getPopular(Integer count, Integer genreId, Integer year) {
+        return storage.getPopular(count, genreId, year);
     }
 }
