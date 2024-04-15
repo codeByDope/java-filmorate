@@ -9,7 +9,7 @@ public class Feed {
     private Long eventId;
     private Long userId;
     private Long entityId;
-    private LocalDate timestamp;
+    private Long timestamp;
     private String eventType;
     private String operation;
 }
