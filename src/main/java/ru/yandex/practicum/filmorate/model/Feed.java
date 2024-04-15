@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class Event {
+public class Feed {
     private Long eventId;
     private Long userId;
     private Long entityId;

@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.service.feed.FeedService;
 
 import java.util.List;
 
@@ -15,12 +16,11 @@ import java.util.List;
 @RequestMapping("/users")
 @RestController
 public class FeedController {
-
+    private FeedService service;
 
     @GetMapping("/{id}/feed")
-    public List<Event> getFeed(@PathVariable Long id) {
+    public List<Feed> getAll(@PathVariable Long id) {
         log.info("Был запрошен пользователь с ID");
-//        return service.getUserById(id);
-        return null;
+        return service.getAllByUserId(id);
     }
 }
