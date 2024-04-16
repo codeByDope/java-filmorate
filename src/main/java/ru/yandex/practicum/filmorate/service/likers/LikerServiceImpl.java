@@ -22,15 +22,15 @@ public class LikerServiceImpl implements LikerService {
     @Override
     public void add(Long filmId, Long userId) {
         log.info("Пользователь {} поставил лайк фильму {}.", userId, filmId);
-        storage.add(filmId, userId);
         feedService.addEvent(userId, filmId, FeedEventType.LIKE, FeedOperationType.ADD);
+        storage.add(filmId, userId);
     }
 
     @Override
     public void delete(Long filmId, Long userId) {
         log.info("Пользователь {} удалил лайк фильму {}.", userId, filmId);
-        storage.delete(filmId, userId);
         feedService.addEvent(userId, filmId, FeedEventType.LIKE, FeedOperationType.REMOVE);
+        storage.delete(filmId, userId);
     }
 
     @Override

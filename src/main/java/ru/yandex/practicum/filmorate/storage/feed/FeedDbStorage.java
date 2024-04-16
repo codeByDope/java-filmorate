@@ -29,7 +29,7 @@ public class FeedDbStorage implements FeedStorage{
         String sql = "INSERT INTO feed (time_stamp, user_id, event_type, operation_type, entity_id) VALUES (?, ?, ?, ?, ?)";
         feedToAdd.setUserId(userId);
         feedToAdd.setEntityId(entityId);
-        feedToAdd.setTimestamp(Instant.now().getEpochSecond());
+        feedToAdd.setTimestamp(Instant.now().toEpochMilli());
         feedToAdd.setEventType(et.name());
         feedToAdd.setOperation(ot.name());
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -51,7 +51,8 @@ public class FeedDbStorage implements FeedStorage{
 
     @Override
     public List<Feed> getAllByUserId(Long userId) {
-        String sql = "SELECT * FROM feed WHERE user_id IN (SELECT friend_user_id FROM friends WHERE main_user_id = ?)";
+//        String sql = "SELECT * FROM feed WHERE user_id IN (SELECT friend_user_id FROM friends WHERE main_user_id = ?)";
+        String sql = "SELECT * FROM feed WHERE user_id = ?";
         return jdbcTemplate.query(sql, mapper, userId);
     }
 }
