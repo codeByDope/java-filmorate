@@ -169,7 +169,7 @@ public class FilmDbStorage implements FilmStorage {
             genreStorage.getById(genreId).orElseThrow(() -> new ValidationException("Неправильно задан жанр!"));
         }
         String sqlQuery = getSqlQueryForPopularFilms(count, genreId, year);
-       return jdbcTemplate.query(sqlQuery, mapper);
+        return jdbcTemplate.query(sqlQuery, mapper);
     }
 
     private String getSqlQueryForPopularFilms(Long count,
