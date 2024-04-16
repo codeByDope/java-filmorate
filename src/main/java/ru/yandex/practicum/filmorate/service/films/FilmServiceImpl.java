@@ -91,4 +91,8 @@ public class FilmServiceImpl implements FilmService {
                     .collect(Collectors.toList()));
         }
     }
+
+    public List<Film> getCommon(Long userId, Long friendId) {
+        return storage.getCommon(userId, friendId);
+    }
 }

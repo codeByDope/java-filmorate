@@ -50,15 +50,23 @@ public class FilmDbStorage implements FilmStorage {
             "where fd.director_id = ? " +
             "group by f.id " +
             "order by count(l.film_id) desc";
-
     private static final String SQL_GET_DIRECTOR_FILMS_SORTED_BY_YEARS = "select f.*, m.* from films as f " +
             "join mpa_ratings as m on m.id = f.rating_id " +
             "join films_directors as fd on fd.film_id = f.id " +
             "where fd.director_id = ? " +
             "order by f.release_date";
-
     private static final String SQL_ADD_DIRECTORS = "insert into films_directors (film_id, director_id) values (?, ?)";
     private static final String SQL_DELETE_DIRECTORS = "delete from films_directors where film_id = ?";
+    private static final String SQL_GET_COMMON = "SELECT f.*, COUNT(l.film_id) AS like_count\n" +
+            "FROM films AS f " +
+            "JOIN likers AS l ON f.id = l.film_id " +
+            "WHERE l.liker_id = ? " +
+            "AND l.film_id IN (" +
+            "    SELECT l.film_id " +
+            "    FROM likers l " +
+            "    WHERE l.liker_id = ?) " +
+            "GROUP BY f.id " +
+            "ORDER BY like_count DESC; ";
 
 
     @Override
@@ -162,6 +170,11 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getDirectorsFilmSortedByYears(int directorId) {
         return jdbcTemplate.query(SQL_GET_DIRECTOR_FILMS_SORTED_BY_YEARS, mapper, directorId);
+    }
+
+    @Override
+    public List<Film> getCommon(Long userId, Long friendId) {
+        return jdbcTemplate.query(SQL_GET_COMMON, mapper, userId, friendId);
     }
 
     private void updateDirectors(Film film) {

@@ -55,4 +55,10 @@ public class FilmController {
         log.info("Было запрошено удаление фильма с id " + id);
         service.delete(id);
     }
+
+    @GetMapping("/common")
+    public List<Film> getCommon(@RequestParam Long userId, @RequestParam Long friendId) {
+        log.info("Были запрошены общие фильмы пользователей {} и {}", userId, friendId);
+        return service.getCommon(userId, friendId);
+    }
 }
