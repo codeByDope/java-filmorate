@@ -3,7 +3,10 @@ package ru.yandex.practicum.filmorate.service.reviews;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.FeedEventType;
+import ru.yandex.practicum.filmorate.model.FeedOperationType;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.service.feed.FeedService;
 import ru.yandex.practicum.filmorate.service.films.FilmService;
 import ru.yandex.practicum.filmorate.service.users.UserService;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
@@ -20,24 +23,32 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserStorage userStorage;
     private final UserService userService;
     private final FilmService filmService;
+    private final FeedService feedService;
 
     @Override
     public Review addReview(Review review) {
+        Review reviewFromDb;
         userService.getUserById(review.getUserId());
         filmService.getById(review.getFilmId());
-        return reviewStorage.addReview(review);
+        reviewFromDb = reviewStorage.addReview(review);
+        feedService.addEvent(review.getUserId(), reviewFromDb.getReviewId(), FeedEventType.REVIEW, FeedOperationType.ADD);
+        return reviewFromDb;
     }
 
     @Override
     public Review updateReview(Review review) {
+        Review reviewFromDb;
         userService.getUserById(review.getUserId());
         filmService.getById(review.getFilmId());
-        return reviewStorage.updateReview(review);
+        reviewFromDb = reviewStorage.updateReview(review);
+        feedService.addEvent(review.getUserId(), reviewFromDb.getReviewId(), FeedEventType.REVIEW, FeedOperationType.UPDATE);
+        return reviewFromDb;
     }
 
     @Override
     public void deleteReview(int reviewId) {
         reviewStorage.deleteReview(reviewId);
+        //todo: добавить в ленту событий удаление ревью
     }
 
     @Override

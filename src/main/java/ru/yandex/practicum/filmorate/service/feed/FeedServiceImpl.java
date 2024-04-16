@@ -19,7 +19,7 @@ public class FeedServiceImpl implements FeedService{
     private final UserService userService;
 
     @Override
-    public Feed add(Long userId, Long entityId, FeedEventType et, FeedOperationType ot) {
+    public Feed addEvent(Long userId, Long entityId, FeedEventType et, FeedOperationType ot) {
         log.info("Пользователь {} добавил в друзья пользователя {}", userId, entityId);
         return storage.add(userId, entityId, et, ot);
     }

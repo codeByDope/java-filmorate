@@ -40,6 +40,7 @@ public class FeedDbStorage implements FeedStorage{
             ps.setLong(2, feedToAdd.getUserId());
             ps.setString(3, feedToAdd.getEventType());
             ps.setString(4, feedToAdd.getOperation());
+            ps.setLong(5, feedToAdd.getEntityId());
             return ps;
         }, keyHolder);
 

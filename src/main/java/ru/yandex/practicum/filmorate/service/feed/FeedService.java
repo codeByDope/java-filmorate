@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.FeedOperationType;
 import java.util.List;
 
 public interface FeedService {
-    Feed add(Long userId, Long entityId, FeedEventType et, FeedOperationType ot);
+    Feed addEvent(Long userId, Long entityId, FeedEventType et, FeedOperationType ot);
 
     List<Feed> getAllByUserId(Long userId);
 }
