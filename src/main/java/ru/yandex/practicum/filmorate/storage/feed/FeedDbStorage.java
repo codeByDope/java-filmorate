@@ -26,7 +26,7 @@ public class FeedDbStorage implements FeedStorage{
     @Override
     public Feed add(Long userId, Long entityId, EventType et, OperationType ot) {
         Feed feedToAdd = new Feed();
-        String sql = "INSERT INTO feed (timestamp, user_id, event_type, operation, entity_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO feed (time_stamp, user_id, event_type, operation, entity_id) VALUES (?, ?, ?, ?, ?)";
         feedToAdd.setUserId(userId);
         feedToAdd.setEntityId(entityId);
         feedToAdd.setTimestamp(Instant.now().getEpochSecond());
