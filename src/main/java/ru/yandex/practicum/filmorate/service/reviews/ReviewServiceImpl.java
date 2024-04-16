@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -47,8 +48,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void deleteReview(int reviewId) {
+        Optional<Review> review = reviewStorage.getReviewById((long) reviewId);
+        review.ifPresent(value -> feedService.addEvent(value.getUserId(), value.getReviewId(), FeedEventType.REVIEW, FeedOperationType.REMOVE));
         reviewStorage.deleteReview(reviewId);
-        //todo: добавить в ленту событий удаление ревью
     }
 
     @Override
