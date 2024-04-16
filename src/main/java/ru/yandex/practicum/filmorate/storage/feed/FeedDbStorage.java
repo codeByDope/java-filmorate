@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.model.FeedOperationType;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -53,6 +54,20 @@ public class FeedDbStorage implements FeedStorage{
     public List<Feed> getAllByUserId(Long userId) {
 //        String sql = "SELECT * FROM feed WHERE user_id IN (SELECT friend_user_id FROM friends WHERE main_user_id = ?)";
         String sql = "SELECT * FROM feed WHERE user_id = ?";
-        return jdbcTemplate.query(sql, mapper, userId);
+        List<Feed> feeds = new ArrayList<>();
+        feeds = jdbcTemplate.query(
+                sql,
+                (resultSet, rowNum) -> {
+                    Feed oneFeed = new Feed();
+                    oneFeed.setEventId(resultSet.getLong("EVENT_ID"));
+                    oneFeed.setTimestamp(resultSet.getLong("TIME_STAMP"));
+                    oneFeed.setUserId(resultSet.getLong("USER_ID"));
+                    oneFeed.setEventType(resultSet.getString("EVENT_TYPE"));
+                    oneFeed.setOperation(resultSet.getString("OPERATION_TYPE"));
+                    oneFeed.setEntityId(resultSet.getLong("ENTITY_ID"));
+                    return oneFeed;
+                }, userId);
+        return feeds;
+//        return jdbcTemplate.query(sql, mapper, userId);
     }
 }
