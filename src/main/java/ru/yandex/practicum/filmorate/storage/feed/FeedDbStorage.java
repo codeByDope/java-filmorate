@@ -3,10 +3,10 @@ package ru.yandex.practicum.filmorate.storage.feed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.mapper.FeedRowMapper;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.FeedEventType;
 import ru.yandex.practicum.filmorate.model.FeedOperationType;
@@ -20,13 +20,13 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class FeedDbStorage implements FeedStorage{
-    private final RowMapper<Feed> mapper;
+    private final FeedRowMapper mapper;
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Feed add(Long userId, Long entityId, FeedEventType et, FeedOperationType ot) {
         Feed feedToAdd = new Feed();
-        String sql = "INSERT INTO feed (time_stamp, user_id, event_type, operation, entity_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO feed (time_stamp, user_id, event_type, operation_type, entity_id) VALUES (?, ?, ?, ?, ?)";
         feedToAdd.setUserId(userId);
         feedToAdd.setEntityId(entityId);
         feedToAdd.setTimestamp(Instant.now().getEpochSecond());
