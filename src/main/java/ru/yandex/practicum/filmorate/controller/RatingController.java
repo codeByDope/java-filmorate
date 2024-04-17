@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.service.ratings.MpaRatingService;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/mpa")
+@RequestMapping(ApiPathConstants.MPA_PATH)
 @RestController
 public class RatingController {
     private final MpaRatingService service;
@@ -25,7 +26,7 @@ public class RatingController {
         return service.getAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ApiPathConstants.BY_ID_PATH)
     public MpaRating getById(@PathVariable Integer id) {
         log.info("Запрошено название рейтинга с ID {}!", id);
         return service.getById(id);
