@@ -29,10 +29,10 @@ public class LikersDbStorage implements LikerStorage {
 
     @Override
     public void add(Long filmId, Long userId) {
-        int count = jdbcTemplate.queryForObject(CHECK_LIKE_EXISTENCE_SQL, Integer.class, filmId, userId);
-        if (count == 1) {
-            throw new LikeHasAlreadyCreatedException("Пользователь " + userId + " уже поставил лайк фильму " + filmId);
-        }
+//        int count = jdbcTemplate.queryForObject(CHECK_LIKE_EXISTENCE_SQL, Integer.class, filmId, userId);
+//        if (count == 1) {
+//            throw new LikeHasAlreadyCreatedException("Пользователь " + userId + " уже поставил лайк фильму " + filmId);
+//        }
 
         jdbcTemplate.update(INSERT_LIKE_SQL, filmId, userId);
     }
