@@ -42,7 +42,7 @@ public class ReviewServiceImpl implements ReviewService {
         userService.getUserById(review.getUserId());
         filmService.getById(review.getFilmId());
         reviewFromDb = reviewStorage.updateReview(review);
-        feedService.addEvent(review.getUserId(), reviewFromDb.getReviewId(), FeedEventType.REVIEW, FeedOperationType.UPDATE);
+        feedService.addEvent(reviewFromDb.getUserId(), reviewFromDb.getReviewId(), FeedEventType.REVIEW, FeedOperationType.UPDATE);
         return reviewFromDb;
     }
 
