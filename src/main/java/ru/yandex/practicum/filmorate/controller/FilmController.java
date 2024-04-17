@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.films.FilmService;
 
@@ -56,7 +57,7 @@ public class FilmController {
         service.delete(id);
     }
 
-    @GetMapping("/common")
+    @GetMapping(ApiPathConstants.COMMON_PATH)
     public List<Film> getCommon(@RequestParam Long userId, @RequestParam Long friendId) {
         log.info("Были запрошены общие фильмы пользователей {} и {}", userId, friendId);
         return service.getCommon(userId, friendId);
