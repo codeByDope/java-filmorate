@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class ApiPathConstants {
-
+    public static final String SEARCH_FILMS_PATH = "/search";
     public static final String REVIEW_PATH = "reviews";
     public static final String BY_ID_PATH = "/{id}";
     public static final String LIKE_PATH = BY_ID_PATH + "/like/{userId}";

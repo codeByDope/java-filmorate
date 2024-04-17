@@ -33,6 +33,13 @@ public class FilmController {
         return service.getById(id);
     }
 
+    @GetMapping(ApiPathConstants.SEARCH_FILMS_PATH)
+    public List<Film> search(@RequestParam String query,
+                             @RequestParam(name = "by") List<String> filters) {
+        log.info("Был запрошен поиск фильмов");
+        return service.search(query, filters);
+    }
+
     @PostMapping
     public Film add(@Valid @RequestBody Film film) {
         log.info("Запрошено добавление фильма " + film.getName());

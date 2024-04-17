@@ -62,6 +62,16 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public List<Film> search(String query, List<String> filters) {
+        if (filters.isEmpty() || !(filters.contains("title") || filters.contains("director")) || filters.size() > 2) {
+            throw new ValidationException("Фильтр поиска задан некорректно: количество параметров: " +
+                    filters.size() + " - Должен быть 1 или 2; В запросе присутствуют фильтры: " + filters +
+                    " должны быть фильтры title, director");
+        }
+        return storage.search(query, filters);
+    }
+
+    @Override
     public List<Film> getDirectorFilms(int directorId, String sortBy) {
         directorService.getById(directorId);
         if (sortBy.equals("likes")) {
