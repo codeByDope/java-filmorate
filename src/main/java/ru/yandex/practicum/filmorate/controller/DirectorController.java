@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants.DIRECTORS_PATH)
+@RequestMapping(ApiPathConstants.DIRECTORS_PATH)
 @Slf4j
 public class DirectorController {
     private final DirectorService service;

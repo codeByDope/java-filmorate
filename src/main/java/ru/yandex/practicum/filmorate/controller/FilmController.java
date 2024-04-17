@@ -58,7 +58,7 @@ public class FilmController {
         return service.getDirectorFilms(directorId, sortBy);
     }
 
-    @GetMapping(value = ApiPathConstants.POPULAR_FILMS_PATH)
+    @GetMapping(ApiPathConstants.POPULAR_FILMS_PATH)
     public List<Film> getMostPopularFilms(@RequestParam(name = "count", required = false) String count,
                                           @RequestParam(name = "genreId", required = false) Integer genreId,
                                           @RequestParam(name = "year", required = false) Integer year) {
