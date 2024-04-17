@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.mapper.FeedRowMapper;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.FeedEventType;
 import ru.yandex.practicum.filmorate.model.FeedOperationType;
@@ -14,16 +13,22 @@ import ru.yandex.practicum.filmorate.model.FeedOperationType;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class FeedDbStorage implements FeedStorage{
-    private final FeedRowMapper mapper;
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * Добавление события в ленту событий.
+     * @param userId Id пользователя - автора события
+     * @param entityId Id объекта события
+     * @param et перечисление, описывающее тип объекта события (REVIEW, LIKE, FRIEND)
+     * @param ot перечисление, описывающее событие (ADD, UPDATE, REMOVE)
+     * @return сформированный объект Feed
+     */
     @Override
     public Feed add(Long userId, Long entityId, FeedEventType et, FeedOperationType ot) {
         Feed feedToAdd = new Feed();
@@ -50,12 +55,15 @@ public class FeedDbStorage implements FeedStorage{
         return feedToAdd;
     }
 
+    /**
+     * Получение ленты событий в виде списка из объектов Feed
+     * @param userId Id пользователя, автора событий в ленте
+     * @return список из объектов Feed
+     */
     @Override
     public List<Feed> getAllByUserId(Long userId) {
-//        String sql = "SELECT * FROM feed WHERE user_id IN (SELECT friend_user_id FROM friends WHERE main_user_id = ?)";
         String sql = "SELECT * FROM feed WHERE user_id = ?";
-        List<Feed> feeds = new ArrayList<>();
-        feeds = jdbcTemplate.query(
+        return jdbcTemplate.query(
                 sql,
                 (resultSet, rowNum) -> {
                     Feed oneFeed = new Feed();
@@ -67,7 +75,5 @@ public class FeedDbStorage implements FeedStorage{
                     oneFeed.setEntityId(resultSet.getLong("ENTITY_ID"));
                     return oneFeed;
                 }, userId);
-        return feeds;
-//        return jdbcTemplate.query(sql, mapper, userId);
     }
 }
