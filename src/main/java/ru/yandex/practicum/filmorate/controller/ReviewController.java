@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.reviews.ReviewService;
-import ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -76,4 +76,6 @@ public class ReviewController {
         return ResponseEntity.status(200)
                 .build();
     }
+
+
 }
