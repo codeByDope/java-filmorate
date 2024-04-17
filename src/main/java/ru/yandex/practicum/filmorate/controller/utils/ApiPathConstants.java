@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.utils;
+package ru.yandex.practicum.filmorate.controller.utils;
 
 import lombok.experimental.UtilityClass;
 
