@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(ApiPathConstants.USERS_PATH)
+@RequestMapping(ApiPathConstants.USER_PATH)
 public class FeedController {
     private final FeedService service;
 

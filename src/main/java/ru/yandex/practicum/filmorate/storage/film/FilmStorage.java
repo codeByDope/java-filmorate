@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import org.springframework.lang.Nullable;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
@@ -21,4 +22,6 @@ public interface FilmStorage {
     List<Film> getDirectorsFilmSortedByLikes(int directorId);
 
     List<Film> getDirectorsFilmSortedByYears(int directorId);
+
+    List<Film> getMostPopularFilms(Long count, @Nullable Integer genreId, @Nullable Integer year);
 }
