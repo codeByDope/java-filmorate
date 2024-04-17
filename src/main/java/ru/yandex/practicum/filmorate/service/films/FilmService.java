@@ -13,6 +13,8 @@ public interface FilmService {
 
     Film update(Film film);
 
+    List<Film> search(String query, List<String> by);
+
     List<Film> getDirectorFilms(int directorId, String sortBy);
 
     void delete(Long id);
