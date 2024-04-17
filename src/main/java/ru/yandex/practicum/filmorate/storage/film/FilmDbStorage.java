@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -35,7 +34,6 @@ public class FilmDbStorage implements FilmStorage {
     private final GenreStorage genreStorage;
     private final RatingStorage ratingStorage;
     private final DirectorStorage directorStorage;
-    private final PopularFilmsRequestCreator popularFilmsRequestCreator;
 
     private static final String INSERT_FILM_SQL = "INSERT INTO films (title, description, release_date, duration, rating_id) VALUES (?, ?, ?, ?, ?)";
     private static final String INSERT_FILM_GENRE_SQL = "INSERT INTO films_genres (film_id, genre_id) VALUES (?, ?)";
@@ -159,30 +157,6 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getDirectorsFilmSortedByLikes(int directorId) {
         return jdbcTemplate.query(SQL_GET_DIRECTOR_FILMS_SORTED_BY_LIKES, mapper, directorId);
-    }
-
-    @Override
-    public List<Film> getMostPopularFilms(Long count,
-                                          @Nullable Integer genreId,
-                                          @Nullable Integer year) {
-        if (genreId != null) {
-            genreStorage.getById(genreId).orElseThrow(() -> new ValidationException("Неправильно задан жанр!"));
-        }
-        String sqlQuery = getSqlQueryForPopularFilms(count, genreId, year);
-        return jdbcTemplate.query(sqlQuery, mapper);
-    }
-
-    private String getSqlQueryForPopularFilms(Long count,
-                                              @Nullable Integer genreId,
-                                              @Nullable Integer year) {
-        if (genreId != null && year != null) {
-            return popularFilmsRequestCreator.createMostPopularFilmsQueryByFilmAndGenre(count, genreId, year);
-        } else if (genreId != null) {
-            return popularFilmsRequestCreator.createMostPopularFilmsQueryByGenreId(count, genreId);
-        } else if (year != null) {
-            return popularFilmsRequestCreator.createMostPopularFilmsQueryByYear(count, year);
-        }
-        return popularFilmsRequestCreator.createMostPopularFilmsQuery(count);
     }
 
     @Override

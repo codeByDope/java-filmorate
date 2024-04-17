@@ -47,4 +47,9 @@ public class LikerServiceImpl implements LikerService {
         return storage.getFilmsByLikerId(id);
     }
 
+    @Override
+    public List<Film> getMostPopularFilms(Long count) {
+        log.info("Запрошены {} наиболее популярных фильмов", count);
+        return storage.getMostPopularFilms(count);
+    }
 }
