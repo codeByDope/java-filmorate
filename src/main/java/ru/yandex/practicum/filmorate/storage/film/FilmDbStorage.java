@@ -179,13 +179,13 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> search(String query, List<String> by) {
+    public List<Film> search(String query, List<String> filters) {
         String updatedQuery = "%" + query + "%";
 
-        if (by.contains("director") && by.contains("title")) {
+        if (filters.contains("director") && filters.contains("title")) {
             return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_NAME_AND_DIRECTOR_SQL, mapper,
                     updatedQuery, updatedQuery);
-        } else if (by.contains("title")) {
+        } else if (filters.contains("title")) {
             return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_NAME_SQL, mapper, updatedQuery);
         } else {
             return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_DIRECTOR_SQL, mapper, updatedQuery);

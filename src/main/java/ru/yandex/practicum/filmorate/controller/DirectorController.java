@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.directors.DirectorService;
-import ru.yandex.practicum.filmorate.utils.ApiPathConstants;
+import ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants;
 
 import javax.validation.Valid;
 import java.util.List;

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.films.FilmService;
 
@@ -31,11 +32,11 @@ public class FilmController {
         return service.getById(id);
     }
 
-    @GetMapping("/search")
+    @GetMapping(ApiPathConstants.SEARCH_FILMS_PATH)
     public List<Film> search(@RequestParam String query,
-                             @RequestParam List<String> by) {
+                             @RequestParam(name = "by") List<String> filters) {
         log.info("Был запрошен поиск фильмов");
-        return service.search(query, by);
+        return service.search(query, filters);
     }
 
     @PostMapping
