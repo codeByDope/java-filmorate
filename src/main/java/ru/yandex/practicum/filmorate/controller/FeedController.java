@@ -13,9 +13,9 @@ import ru.yandex.practicum.filmorate.service.feed.FeedService;
 import java.util.List;
 
 @Slf4j
+@RestController
 @RequiredArgsConstructor
 @RequestMapping(ApiPathConstants.USERS_PATH)
-@RestController
 public class FeedController {
     private final FeedService service;
 
@@ -25,3 +25,4 @@ public class FeedController {
         return service.getFeedByUserId(id);
     }
 }
+

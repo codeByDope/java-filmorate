@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.mapper.FeedRowMapper;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.FeedEventType;
 import ru.yandex.practicum.filmorate.model.FeedOperationType;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FeedDbStorage implements FeedStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final FeedRowMapper feedRowMapper;
 
     /**
      * Добавление события в ленту событий.
@@ -63,17 +65,6 @@ public class FeedDbStorage implements FeedStorage {
     @Override
     public List<Feed> getFeedByUserId(Long userId) {
         String sql = "SELECT * FROM feed WHERE user_id = ?";
-        return jdbcTemplate.query(
-                sql,
-                (resultSet, rowNum) -> {
-                    Feed oneFeed = new Feed();
-                    oneFeed.setEventId(resultSet.getLong("EVENT_ID"));
-                    oneFeed.setTimestamp(resultSet.getLong("TIME_STAMP"));
-                    oneFeed.setUserId(resultSet.getLong("USER_ID"));
-                    oneFeed.setEventType(resultSet.getString("EVENT_TYPE"));
-                    oneFeed.setOperation(resultSet.getString("OPERATION_TYPE"));
-                    oneFeed.setEntityId(resultSet.getLong("ENTITY_ID"));
-                    return oneFeed;
-                }, userId);
+        return jdbcTemplate.query(sql, feedRowMapper, userId);
     }
 }

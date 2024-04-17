@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Feed;
@@ -8,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
+@RequiredArgsConstructor
 public class FeedRowMapper implements RowMapper<Feed> {
     @Override
     public Feed mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -20,6 +22,6 @@ public class FeedRowMapper implements RowMapper<Feed> {
         feed.setOperation(rs.getString("operation_type"));
         feed.setEntityId(rs.getLong("entity_id"));
 
-        return null;
+        return feed;
     }
 }
