@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FeedDbStorage implements FeedStorage{
+public class FeedDbStorage implements FeedStorage {
     private final JdbcTemplate jdbcTemplate;
 
     /**
