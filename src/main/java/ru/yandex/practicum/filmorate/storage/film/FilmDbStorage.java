@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -34,6 +35,7 @@ public class FilmDbStorage implements FilmStorage {
     private final GenreStorage genreStorage;
     private final RatingStorage ratingStorage;
     private final DirectorStorage directorStorage;
+    private final PopularFilmsRequestCreator popularFilmsRequestCreator;
 
     private static final String INSERT_FILM_SQL = "INSERT INTO films (title, description, release_date, duration, rating_id) VALUES (?, ?, ?, ?, ?)";
     private static final String INSERT_FILM_GENRE_SQL = "INSERT INTO films_genres (film_id, genre_id) VALUES (?, ?)";
@@ -50,7 +52,6 @@ public class FilmDbStorage implements FilmStorage {
             "where fd.director_id = ? " +
             "group by f.id " +
             "order by count(l.film_id) desc";
-
     private static final String SQL_GET_DIRECTOR_FILMS_SORTED_BY_YEARS = "select f.*, m.* from films as f " +
             "join mpa_ratings as m on m.id = f.rating_id " +
             "join films_directors as fd on fd.film_id = f.id " +
@@ -181,17 +182,41 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> search(String query, List<String> by) {
+    public List<Film> search(String query, List<String> filters) {
         String updatedQuery = "%" + query + "%";
 
-        if (by.contains("director") && by.contains("title")) {
+        if (filters.contains("director") && filters.contains("title")) {
             return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_NAME_AND_DIRECTOR_SQL, mapper,
                     updatedQuery, updatedQuery);
-        } else if (by.contains("title")) {
+        } else if (filters.contains("title")) {
             return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_NAME_SQL, mapper, updatedQuery);
         } else {
             return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_DIRECTOR_SQL, mapper, updatedQuery);
         }
+    }
+
+    @Override
+    public List<Film> getMostPopularFilms(Long count,
+                                          @Nullable Integer genreId,
+                                          @Nullable Integer year) {
+        if (genreId != null) {
+            genreStorage.getById(genreId).orElseThrow(() -> new ValidationException("Неправильно задан жанр!"));
+        }
+        String sqlQuery = getSqlQueryForPopularFilms(count, genreId, year);
+        return jdbcTemplate.query(sqlQuery, mapper);
+    }
+
+    private String getSqlQueryForPopularFilms(Long count,
+                                              @Nullable Integer genreId,
+                                              @Nullable Integer year) {
+        if (genreId != null && year != null) {
+            return popularFilmsRequestCreator.createMostPopularFilmsQueryByFilmAndGenre(count, genreId, year);
+        } else if (genreId != null) {
+            return popularFilmsRequestCreator.createMostPopularFilmsQueryByGenreId(count, genreId);
+        } else if (year != null) {
+            return popularFilmsRequestCreator.createMostPopularFilmsQueryByYear(count, year);
+        }
+        return popularFilmsRequestCreator.createMostPopularFilmsQuery(count);
     }
 
     @Override
