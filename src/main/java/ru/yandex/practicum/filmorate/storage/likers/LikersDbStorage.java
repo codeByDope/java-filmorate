@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage.likers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.like.LikeHasAlreadyCreatedException;
+
 import ru.yandex.practicum.filmorate.exception.like.NotLikeException;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
@@ -29,11 +29,6 @@ public class LikersDbStorage implements LikerStorage {
 
     @Override
     public void add(Long filmId, Long userId) {
-//        int count = jdbcTemplate.queryForObject(CHECK_LIKE_EXISTENCE_SQL, Integer.class, filmId, userId);
-//        if (count == 1) {
-//            throw new LikeHasAlreadyCreatedException("Пользователь " + userId + " уже поставил лайк фильму " + filmId);
-//        }
-
         jdbcTemplate.update(INSERT_LIKE_SQL, filmId, userId);
     }
 
