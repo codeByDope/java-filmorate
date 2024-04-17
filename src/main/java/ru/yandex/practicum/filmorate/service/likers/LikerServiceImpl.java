@@ -23,7 +23,6 @@ public class LikerServiceImpl implements LikerService {
     public void add(Long filmId, Long userId) {
         log.info("Пользователь {} поставил лайк фильму {}.", userId, filmId);
         storage.add(filmId, userId);
-        //todo: событие - в ленту
         feedService.addEvent(userId, filmId, FeedEventType.LIKE, FeedOperationType.ADD);
     }
 
@@ -31,7 +30,6 @@ public class LikerServiceImpl implements LikerService {
     public void delete(Long filmId, Long userId) {
         log.info("Пользователь {} удалил лайк фильму {}.", userId, filmId);
         storage.delete(filmId, userId);
-        //todo: событие - в ленту
         feedService.addEvent(userId, filmId, FeedEventType.LIKE, FeedOperationType.REMOVE);
     }
 
