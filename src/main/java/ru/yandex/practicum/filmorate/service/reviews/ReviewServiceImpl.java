@@ -48,7 +48,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void deleteReview(int reviewId) {
-        //todo: проверить работу методов для ленты событий (feedservice)
         Optional<Review> review = reviewStorage.getReviewById((long) reviewId);
         review.ifPresent(rev -> feedService.addEvent(rev.getUserId(), rev.getReviewId(), FeedEventType.REVIEW, FeedOperationType.REMOVE));
         reviewStorage.deleteReview(reviewId);
