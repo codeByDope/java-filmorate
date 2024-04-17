@@ -25,7 +25,7 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
-    public List<Feed> getAllByUserId(Long userId) {
+    public List<Feed> getFeedByUserId(Long userId) {
         log.info("Проверка существования пользователя {}", userId);
         userService.getUserById(userId);
         return storage.getAllByUserId(userId);

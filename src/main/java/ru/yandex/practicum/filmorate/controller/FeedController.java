@@ -22,6 +22,6 @@ public class FeedController {
     @GetMapping(ApiPathConstants.FEED_PATH)
     public List<Feed> getAll(@PathVariable Long id) {
         log.info("Запрос ленты событий для пользователя с Id {}", id);
-        return service.getAllByUserId(id);
+        return service.getFeedByUserId(id);
     }
 }
