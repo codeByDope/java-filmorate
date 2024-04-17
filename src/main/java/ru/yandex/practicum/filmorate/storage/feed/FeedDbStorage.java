@@ -61,7 +61,7 @@ public class FeedDbStorage implements FeedStorage {
      * @return список из объектов Feed
      */
     @Override
-    public List<Feed> getAllByUserId(Long userId) {
+    public List<Feed> getFeedByUserId(Long userId) {
         String sql = "SELECT * FROM feed WHERE user_id = ?";
         return jdbcTemplate.query(
                 sql,

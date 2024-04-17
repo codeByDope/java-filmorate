@@ -9,5 +9,5 @@ import java.util.List;
 public interface FeedStorage {
     Feed add(Long userId, Long entityId, FeedEventType et, FeedOperationType ot);
 
-    List<Feed> getAllByUserId(Long userId);
+    List<Feed> getFeedByUserId(Long userId);
 }

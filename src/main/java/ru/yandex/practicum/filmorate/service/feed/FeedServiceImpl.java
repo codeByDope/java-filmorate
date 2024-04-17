@@ -28,6 +28,6 @@ public class FeedServiceImpl implements FeedService {
     public List<Feed> getFeedByUserId(Long userId) {
         log.info("Проверка существования пользователя {}", userId);
         userService.getUserById(userId);
-        return storage.getAllByUserId(userId);
+        return storage.getFeedByUserId(userId);
     }
 }
