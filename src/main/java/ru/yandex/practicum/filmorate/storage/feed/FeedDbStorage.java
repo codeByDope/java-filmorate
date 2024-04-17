@@ -56,7 +56,7 @@ public class FeedDbStorage implements FeedStorage{
     }
 
     /**
-     * Получение ленты событий в виде списка из объектов Feed
+     * Получение ленты событий в виде списка из объектов-событий Feed
      * @param userId Id пользователя, автора событий в ленте
      * @return список из объектов Feed
      */
