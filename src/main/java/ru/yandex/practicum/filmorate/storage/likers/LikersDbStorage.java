@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.likers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
 import ru.yandex.practicum.filmorate.exception.like.NotLikeException;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
@@ -55,4 +56,10 @@ public class LikersDbStorage implements LikerStorage {
 
         return jdbcTemplate.query(SELECT_FILMS_BY_LIKER_ID_SQL, new Object[]{id}, filmMapper);
     }
+
+    @Override
+    public List<Film> getMostPopularFilms(Long count) {
+        return jdbcTemplate.query(SELECT_MOST_POPULAR_FILMS_SQL, new Object[]{count}, filmMapper);
+    }
 }
+

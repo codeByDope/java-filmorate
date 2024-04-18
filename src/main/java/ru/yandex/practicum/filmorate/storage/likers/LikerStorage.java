@@ -13,4 +13,6 @@ public interface LikerStorage {
     List<User> getLikersByFilmId(Long id);
 
     List<Film> getFilmsByLikerId(Long id);
+
+    List<Film> getMostPopularFilms(Long count);
 }

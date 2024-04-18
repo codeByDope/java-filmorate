@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.users.UserService;
@@ -15,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(ApiPathConstants.USER_PATH)
+@RequestMapping("/users")
 @RestController
 public class UserController {
     private final UserService service;
@@ -26,7 +25,7 @@ public class UserController {
         return service.getUsers();
     }
 
-    @GetMapping(ApiPathConstants.BY_ID_PATH)
+    @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
         log.info("Был запрошен пользователь с ID");
         return service.getUserById(id);
@@ -45,13 +44,13 @@ public class UserController {
 
     @NotNull
     @Positive
-    @DeleteMapping(ApiPathConstants.BY_ID_PATH)
+    @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable Long id) {
         log.info("Было запрошено удаление пользователя с id " + id);
         service.delete(id);
     }
 
-    @GetMapping(ApiPathConstants.RECOMMENDATIONS_PATH)
+    @GetMapping("/{id}/recommendations")
     public List<Film> getRecommendations(@PathVariable Long id) {
         log.info("Запрошены рекомендации для пользователя {}", id);
         return service.getRecommendations(id);

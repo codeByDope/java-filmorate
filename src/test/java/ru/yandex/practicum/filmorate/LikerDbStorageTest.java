@@ -42,7 +42,8 @@ public class LikerDbStorageTest {
     private RatingStorage ratingStorage;
     private UserStorage userStorage;
     private DirectorStorage directorStorage;
-    private final PopularFilmsRequestCreator popularFilmsRequestCreator = new PopularFilmsRequestCreator();
+    private PopularFilmsRequestCreator popularFilmsRequestCreator;
+
 
     @BeforeEach
     public void setUp() {
@@ -50,18 +51,13 @@ public class LikerDbStorageTest {
     }
 
     private void loadTestData() {
+        popularFilmsRequestCreator = new PopularFilmsRequestCreator();
         genreStorage = new GenreDbStorage(new GenreRowMapper(), jdbcTemplate);
         ratingStorage = new RatingDbStorage(new MpaRatingRowMapper(), jdbcTemplate);
         likerStorage = new LikersDbStorage(jdbcTemplate, new UserRowMapper(), new FilmRowMapper(genreStorage, ratingStorage, directorStorage));
         userStorage = new UserDbStorage(new UserRowMapper(), jdbcTemplate);
-        filmStorage = new FilmDbStorage(
-                new FilmRowMapper(genreStorage, ratingStorage, directorStorage),
-                jdbcTemplate,
-                genreStorage,
-                ratingStorage,
-                directorStorage,
-                popularFilmsRequestCreator
-        );
+        filmStorage = new FilmDbStorage(new FilmRowMapper(genreStorage, ratingStorage, directorStorage),
+                jdbcTemplate, genreStorage, ratingStorage, directorStorage, popularFilmsRequestCreator);
 
         jdbcTemplate.execute("MERGE INTO genres(id, title) VALUES (1, 'Комедия')");
         jdbcTemplate.execute("MERGE INTO genres(id, title) VALUES (2, 'Драма')");
