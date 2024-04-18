@@ -24,4 +24,6 @@ public interface FilmService {
                                    @Nullable Integer genreId,
                                    @Nullable Integer year);
 
+
+    List<Film> getCommon(Long userId, Long friendId);
 }

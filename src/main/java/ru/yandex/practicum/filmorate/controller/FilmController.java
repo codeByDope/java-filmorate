@@ -74,4 +74,10 @@ public class FilmController {
                 .orElse(10L);
         return service.getMostPopularFilms(countValue, genreId, year);
     }
+
+    @GetMapping(ApiPathConstants.COMMON_PATH)
+    public List<Film> getCommon(@RequestParam Long userId, @RequestParam Long friendId) {
+        log.info("Были запрошены общие фильмы пользователей {} и {}", userId, friendId);
+        return service.getCommon(userId, friendId);
+    }
 }

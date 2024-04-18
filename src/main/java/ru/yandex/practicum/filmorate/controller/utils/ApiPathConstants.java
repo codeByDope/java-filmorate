@@ -20,5 +20,5 @@ public class ApiPathConstants {
     public static final String GENRE_PATH = "/genres";
     public static final String MPA_PATH = "/mpa";
     public static final String RECOMMENDATIONS_PATH = "/{id}/recommendations";
-
+    public static final String COMMON_PATH = "/common";
 }

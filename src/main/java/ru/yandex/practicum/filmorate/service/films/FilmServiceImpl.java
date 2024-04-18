@@ -111,4 +111,8 @@ public class FilmServiceImpl implements FilmService {
         return storage.getMostPopularFilms(count, genreId, year);
     }
 
+
+    public List<Film> getCommon(Long userId, Long friendId) {
+        return storage.getCommon(userId, friendId);
+    }
 }
