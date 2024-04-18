@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.genres.GenreService;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/genres")
+@RequestMapping(ApiPathConstants.GENRE_PATH)
 @RestController
 public class GenreController {
     private final GenreService service;
@@ -24,7 +25,7 @@ public class GenreController {
         return service.getAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(ApiPathConstants.BY_ID_PATH)
     public Genre getTitleById(@PathVariable Integer id) {
         log.info("Запрошено название жанра с ID {}!", id);
         System.out.println();

@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -34,6 +35,7 @@ public class FilmDbStorage implements FilmStorage {
     private final GenreStorage genreStorage;
     private final RatingStorage ratingStorage;
     private final DirectorStorage directorStorage;
+    private final PopularFilmsRequestCreator popularFilmsRequestCreator;
 
     private static final String INSERT_FILM_SQL = "INSERT INTO films (title, description, release_date, duration, rating_id) VALUES (?, ?, ?, ?, ?)";
     private static final String INSERT_FILM_GENRE_SQL = "INSERT INTO films_genres (film_id, genre_id) VALUES (?, ?)";
@@ -57,6 +59,28 @@ public class FilmDbStorage implements FilmStorage {
             "order by f.release_date";
     private static final String SQL_ADD_DIRECTORS = "insert into films_directors (film_id, director_id) values (?, ?)";
     private static final String SQL_DELETE_DIRECTORS = "delete from films_directors where film_id = ?";
+    private static final String FIND_MOST_POPULAR_FILMS_BY_NAME_SQL = "SELECT f.* " +
+            "FROM films AS f " +
+            "LEFT JOIN likers AS l ON l.film_id = f.id " +
+            "WHERE LOWER(f.title) LIKE LOWER(?) " +
+            "GROUP BY f.id " +
+            "ORDER BY COUNT(l.film_id) DESC";
+    private static final String FIND_MOST_POPULAR_FILMS_BY_DIRECTOR_SQL = "SELECT f.* " +
+            "FROM films AS f " +
+            "LEFT JOIN likers AS l ON l.film_id = f.id " +
+            "LEFT JOIN films_directors AS fd ON fd.film_id=f.id " +
+            "LEFT JOIN directors AS d ON fd.director_id=d.id " +
+            "WHERE LOWER(d.name) LIKE LOWER(?)" +
+            "GROUP BY f.id " +
+            "ORDER BY COUNT(l.film_id) DESC";
+    private static final String FIND_MOST_POPULAR_FILMS_BY_NAME_AND_DIRECTOR_SQL = "SELECT f.* " +
+            "FROM films AS f " +
+            "LEFT JOIN likers AS l ON l.film_id = f.id " +
+            "LEFT JOIN films_directors AS fd ON fd.film_id=f.id " +
+            "LEFT JOIN directors AS d ON fd.director_id=d.id " +
+            "WHERE (LOWER(d.name) LIKE LOWER(?) OR LOWER(f.title) LIKE LOWER(?)) " +
+            "GROUP BY f.id " +
+            "ORDER BY COUNT(l.film_id) DESC";
     private static final String SQL_GET_COMMON = "SELECT f.*, COUNT(l.film_id) AS like_count\n" +
             "FROM films AS f " +
             "JOIN likers AS l ON f.id = l.film_id " +
@@ -165,6 +189,44 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getDirectorsFilmSortedByLikes(int directorId) {
         return jdbcTemplate.query(SQL_GET_DIRECTOR_FILMS_SORTED_BY_LIKES, mapper, directorId);
+    }
+
+    @Override
+    public List<Film> search(String query, List<String> filters) {
+        String updatedQuery = "%" + query + "%";
+
+        if (filters.contains("director") && filters.contains("title")) {
+            return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_NAME_AND_DIRECTOR_SQL, mapper,
+                    updatedQuery, updatedQuery);
+        } else if (filters.contains("title")) {
+            return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_NAME_SQL, mapper, updatedQuery);
+        } else {
+            return jdbcTemplate.query(FIND_MOST_POPULAR_FILMS_BY_DIRECTOR_SQL, mapper, updatedQuery);
+        }
+    }
+
+    @Override
+    public List<Film> getMostPopularFilms(Long count,
+                                          @Nullable Integer genreId,
+                                          @Nullable Integer year) {
+        if (genreId != null) {
+            genreStorage.getById(genreId).orElseThrow(() -> new ValidationException("Неправильно задан жанр!"));
+        }
+        String sqlQuery = getSqlQueryForPopularFilms(count, genreId, year);
+        return jdbcTemplate.query(sqlQuery, mapper);
+    }
+
+    private String getSqlQueryForPopularFilms(Long count,
+                                              @Nullable Integer genreId,
+                                              @Nullable Integer year) {
+        if (genreId != null && year != null) {
+            return popularFilmsRequestCreator.createMostPopularFilmsQueryByFilmAndGenre(count, genreId, year);
+        } else if (genreId != null) {
+            return popularFilmsRequestCreator.createMostPopularFilmsQueryByGenreId(count, genreId);
+        } else if (year != null) {
+            return popularFilmsRequestCreator.createMostPopularFilmsQueryByYear(count, year);
+        }
+        return popularFilmsRequestCreator.createMostPopularFilmsQuery(count);
     }
 
     @Override

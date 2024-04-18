@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service.films;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.film.FilmHasAlreadyCreatedException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
@@ -61,6 +62,16 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public List<Film> search(String query, List<String> filters) {
+        if (filters.isEmpty() || !(filters.contains("title") || filters.contains("director")) || filters.size() > 2) {
+            throw new ValidationException("Фильтр поиска задан некорректно: количество параметров: " +
+                    filters.size() + " - Должен быть 1 или 2; В запросе присутствуют фильтры: " + filters +
+                    " должны быть фильтры title, director");
+        }
+        return storage.search(query, filters);
+    }
+
+    @Override
     public List<Film> getDirectorFilms(int directorId, String sortBy) {
         directorService.getById(directorId);
         if (sortBy.equals("likes")) {
@@ -91,6 +102,15 @@ public class FilmServiceImpl implements FilmService {
                     .collect(Collectors.toList()));
         }
     }
+
+    @Override
+    public List<Film> getMostPopularFilms(Long count,
+                                          @Nullable Integer genreId,
+                                          @Nullable Integer year) {
+        log.info("Запрошены {} наиболее популярных фильмов", count);
+        return storage.getMostPopularFilms(count, genreId, year);
+    }
+
 
     public List<Film> getCommon(Long userId, Long friendId) {
         return storage.getCommon(userId, friendId);

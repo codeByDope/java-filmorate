@@ -14,5 +14,4 @@ public interface LikerService {
 
     List<Film> getFilmsByLikerId(Long id);
 
-    List<Film> getMostPopularFilms(Long count);
 }
