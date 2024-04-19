@@ -55,9 +55,8 @@ public class DirectorDbStorage implements DirectorStorage {
             ps.setString(1, director.getName());
             return ps;
         }, keyHolder);
-        int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
-        return getById(id)
-                .orElseThrow(() -> new DirectorNotFoundException("Режиссёрa с таким id не существует"));
+        director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        return director;
     }
 
     @Override
