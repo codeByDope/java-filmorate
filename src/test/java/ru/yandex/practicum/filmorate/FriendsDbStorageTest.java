@@ -25,6 +25,7 @@ public class FriendsDbStorageTest {
     private JdbcTemplate jdbcTemplate;
 
     private UserStorage userStorage;
+
     private FriendsStorage friendsStorage;
 
     @BeforeEach

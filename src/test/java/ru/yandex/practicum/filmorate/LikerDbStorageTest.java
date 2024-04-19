@@ -83,7 +83,7 @@ public class LikerDbStorageTest {
         jdbcTemplate.update("MERGE INTO films(id, title, description, release_date, duration, rating_id) VALUES (?, ?, ?, ?, ?, ?)",
                 1L, "Test Film", "Test Film Description", LocalDate.of(2023, 1, 1), 120, 1L);
 
-        String sqlLiker = "INSERT INTO likers VALUES(?,?);";
+        String sqlLiker = "INSERT INTO like rs VALUES(?,?);";
         jdbcTemplate.update(sqlLiker, 1L, 1L);
         jdbcTemplate.update(sqlLiker, 1L, 2L);
         jdbcTemplate.update(sqlLiker, 1L, 3L);
