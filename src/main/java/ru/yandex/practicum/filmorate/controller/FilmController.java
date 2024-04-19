@@ -2,13 +2,13 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.utils.ApiPathConstants;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.films.FilmService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping(ApiPathConstants.FILM_PATH)
 @RestController
+@Validated
 public class FilmController {
     private final FilmService service;
 
@@ -52,10 +53,8 @@ public class FilmController {
         return service.update(film);
     }
 
-    @NotNull
-    @Positive
     @DeleteMapping(ApiPathConstants.BY_ID_PATH)
-    public void deleteFilmById(@PathVariable Long id) {
+    public void deleteFilmById(@PathVariable @Positive Long id) {
         log.info("Было запрошено удаление фильма с id " + id);
         service.delete(id);
     }

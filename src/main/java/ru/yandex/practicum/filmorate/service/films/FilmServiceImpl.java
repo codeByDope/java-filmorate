@@ -81,6 +81,7 @@ public class FilmServiceImpl implements FilmService {
         }
     }
 
+    @Override
     public void delete(Long id) {
         if (storage.getById(id).isEmpty()) {
             throw new FilmNotFoundException("Фильм с указаным ID не найден");
@@ -111,7 +112,7 @@ public class FilmServiceImpl implements FilmService {
         return storage.getMostPopularFilms(count, genreId, year);
     }
 
-
+    @Override
     public List<Film> getCommon(Long userId, Long friendId) {
         return storage.getCommon(userId, friendId);
     }
