@@ -5,9 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.user.UserHasAlreadyCreatedException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.films.FilmService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserStorage storage;
+    private final FilmService filmService;
 
     @Override
     public List<User> getUsers() {
@@ -59,4 +63,23 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public void delete(Long id) {
+        if (storage.getById(id).isEmpty()) {
+            throw new UserNotFoundException("Пользователь с указанным ID не найден!");
+        } else {
+            storage.delete(id);
+        }
+    }
+
+    public List<Film> getRecommendations(Long id) {
+        storage.getById(id);
+        List<Film> films = new ArrayList<>();
+
+        for (Long filmId : storage.getRecommendations(id)) {
+            films.add(filmService.getById(filmId));
+        }
+        log.info("Рекомендации для пользователя {} : {}", id, films);
+        return films;
+    }
 }

@@ -11,8 +11,10 @@ import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
 import ru.yandex.practicum.filmorate.mapper.MpaRatingRowMapper;
 import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.PopularFilmsRequestCreator;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.likers.LikerStorage;
@@ -39,6 +41,8 @@ public class LikerDbStorageTest {
     private GenreStorage genreStorage;
     private RatingStorage ratingStorage;
     private UserStorage userStorage;
+    private DirectorStorage directorStorage;
+    private PopularFilmsRequestCreator popularFilmsRequestCreator;
 
 
     @BeforeEach
@@ -47,11 +51,13 @@ public class LikerDbStorageTest {
     }
 
     private void loadTestData() {
+        popularFilmsRequestCreator = new PopularFilmsRequestCreator();
         genreStorage = new GenreDbStorage(new GenreRowMapper(), jdbcTemplate);
         ratingStorage = new RatingDbStorage(new MpaRatingRowMapper(), jdbcTemplate);
-        likerStorage = new LikersDbStorage(jdbcTemplate, new UserRowMapper(), new FilmRowMapper(genreStorage, ratingStorage));
+        likerStorage = new LikersDbStorage(jdbcTemplate, new UserRowMapper(), new FilmRowMapper(genreStorage, ratingStorage, directorStorage));
         userStorage = new UserDbStorage(new UserRowMapper(), jdbcTemplate);
-        filmStorage = new FilmDbStorage(new FilmRowMapper(genreStorage, ratingStorage), jdbcTemplate, genreStorage, ratingStorage);
+        filmStorage = new FilmDbStorage(new FilmRowMapper(genreStorage, ratingStorage, directorStorage),
+                jdbcTemplate, genreStorage, ratingStorage, directorStorage, popularFilmsRequestCreator);
 
         jdbcTemplate.execute("MERGE INTO genres(id, title) VALUES (1, 'Комедия')");
         jdbcTemplate.execute("MERGE INTO genres(id, title) VALUES (2, 'Драма')");
