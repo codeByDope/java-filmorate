@@ -12,9 +12,9 @@ import javax.validation.constraints.Positive;
 public class Director {
     @NotNull
     @Positive
-    int id;
+    private int id;
 
     @NotBlank
-    String name;
+    private String name;
 
 }

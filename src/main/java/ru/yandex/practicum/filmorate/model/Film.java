@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import ru.yandex.practicum.filmorate.model.validation.ValidReleaseDate;
 
 import javax.validation.constraints.NotBlank;
@@ -11,7 +12,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class Film {
     private Long id;
     @NotNull(message = "Название фильма не существует")
