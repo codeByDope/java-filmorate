@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.director.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.mapper.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 
@@ -55,9 +54,8 @@ public class DirectorDbStorage implements DirectorStorage {
             ps.setString(1, director.getName());
             return ps;
         }, keyHolder);
-        int id = Objects.requireNonNull(keyHolder.getKey()).intValue();
-        return getById(id)
-                .orElseThrow(() -> new DirectorNotFoundException("Режиссёрa с таким id не существует"));
+        director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        return director;
     }
 
     @Override
